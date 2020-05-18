@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <camelContext id="camel" streamCache="true" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <json allowJmsType="true" allowUnmarshallType="true"
+                contentTypeHeader="false"
+                enableJaxbAnnotationModule="false"
+                id="ayopop_inquiry_dataformat" library="Jackson"
+                prettyPrint="false"
+                unmarshalTypeName="hana.integ.ayopop.resp.inquiry.InquiryPrepaidResp" useDefaultObjectMapper="true"/>
+            <json allowJmsType="true" allowUnmarshallType="true"
+                contentTypeHeader="false"
+                enableJaxbAnnotationModule="false"
+                id="ayopop_payment_dataformat" library="Jackson"
+                prettyPrint="false"
+                unmarshalTypeName="hana.integ.ayopop.resp.inquiry.InquiryDataPostPaid" useDefaultObjectMapper="true"/>
+            <json allowJmsType="true" allowUnmarshallType="true"
+                contentTypeHeader="false"
+                enableJaxbAnnotationModule="false"
+                id="ayopop_status_dataformat" library="Jackson"
+                prettyPrint="false"
+                unmarshalTypeName="hana.integ.ayopop.resp.inquiry.InquiryDataPostPaid" useDefaultObjectMapper="true"/>
+            <json allowJmsType="true" allowUnmarshallType="true"
+                contentTypeHeader="false"
+                enableJaxbAnnotationModule="false"
+                id="ayopop_balance_dataformat" library="Jackson"
+                prettyPrint="false"
+                unmarshalTypeName="hana.integ.ayopop.resp.inquiry.InquiryDataPostPaid" useDefaultObjectMapper="true"/>
+            <json allowJmsType="true" allowUnmarshallType="true"
+                contentTypeHeader="false"
+                enableJaxbAnnotationModule="false"
+                id="ayopop_productlist_dataformat" library="Jackson"
+                prettyPrint="false"
+                unmarshalTypeName="hana.integ.ayopop.resp.productlist.ProductlistResp" useDefaultObjectMapper="true"/>
+        </dataFormats>
+        <restConfiguration bindingMode="off" component="restlet"
+            contextPath="/hanabank" host="0.0.0.0" port="7081"/>
+        <!-- <restConfiguration apiContextPath="/openapi.json" bindingMode="off" 
+			component="restlet" contextPath="/hanabank" host="0.0.0.0" port="7071"> <apiProperty 
+			key="api.spesification.contentType.json" value="application/vnd.oai.openapi+json;version=2.0"/> 
+			<apiProperty key="api.spesification.contentType.yaml" value="application/vnd.oai.openapi;version=2.0"/> 
+			</restConfiguration> -->
+        <rest id="rest-cbb021e1-7817-4026-a9e1-9044e0f0ffa6">
+            <post id="1bf92085-8dec-4722-9bd0-eebc9d52bd16" uri="integ/ayopop/inquiry">
+                <to uri="direct:inquiry"/>
+            </post>
+            <post id="4c603263-bf05-4258-bf33-3f500ac9d3d0" uri="/integ/ayopop/productlist">
+                <to uri="direct:productlist"/>
+            </post>
+            <post id="c8303b86-5ead-44a5-964d-9192c97eae13" uri="/integ/ayopop/balance">
+                <to uri="direct:balance"/>
+            </post>
+            <post id="3c4cf6b0-f0ed-4612-8633-682d4b46034c" uri="/integ/ayopop/callback">
+                <to uri="direct:callback"/>
+            </post>
+            <post id="bd0b840d-4141-49db-87a7-c5e3eaab11cd" uri="/integ/ayopop/status">
+                <to uri="direct:status"/>
+            </post>
+            <post id="2b494d9d-b5da-4c0d-a415-fc9ee6cfc0d1" uri="/integ/ayopop/payment">
+                <to uri="direct:payment"/>
+            </post>
+        </rest>
+        <route id="_inquiry">
+            <!-- <from id="_to3" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
+            <from id="_to4" uri="direct:inquiry"/>
+            <doTry id="_doTry1">
+                <log id="_Input" message="Input Message : ${body}"/>
+                <unmarshal id="_FL">
+                    <flatpack definition="InquiryFlconfigOut.xml" fixed="true"/>
+                </unmarshal>
+                <log id="_log1" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+                <bean id="_bean1"
+                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)})" ref="requestInquiry"/>
+                <setBody id="_setBody3">
+                    <simple/>
+                </setBody>
+                <to id="_to1" uri="https4://dev.openapi.ayopop.id/api/v1/bill/check?bridgeEndpoint=true&amp;connectionClose=true&amp;throwExceptionOnFailure=false"/>
+                <log id="_log3" message="Response Ayopop Inquiry : ${body}"/>
+                <bean id="_bean3"
+                    method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
+                <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
+                <unmarshal id="_input_to_pojo">
+                    <custom ref="ayopop_inquiry_dataformat"/>
+                </unmarshal>
+                <log id="_Check Parse" message="Check Parse Data responseCode : ${body.responseCode}"/>
+                <bean id="_bean2"
+                    method="generate(${body.responseCode},${body.data.inquiryId},${body.data.accountNumber},${body.data.customerName},${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},${body.data.validity})" ref="preGenerateFLInquiry"/>
+                <log id="_log4" message="List Map Value : ${body}"/>
+                <marshal id="_marshal2">
+                    <flatpack definition="InquiryFlconfigIn.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
+                </marshal>
+                <log id="_log2" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
+                <convertBodyTo id="_convertBodyTo2" type="java.lang.String"/>
+                <bean id="_bean4" method="concatenate(${body})" ref="addAdditionalFields"/>
+                <log id="_log5" message="Fixed Length Message Final : ${body}"/>
+                <doCatch id="_doCatch1">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <log id="co_log9" message="Error       Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="co_setBody6">
+                        <simple/>
+                    </setBody>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="_payment">
+            <from id="_from2" uri="direct:payment"/>
+            <log id="_Input2" message="Input Message : ${body}"/>
+            <unmarshal id="_FL2">
+                <flatpack definition="PaymentFlconfigOut.xml" fixed="true"/>
+            </unmarshal>
+            <log id="_log21" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+            <bean id="_bean21"
+                method="assignValue(body.get(0).get(INQUIRY_ID),body.get(0).get(ACCOUNT_NUMBER),body.get(0).get(PRODUCT_CODE),body.get(0).get(AMOUNT),body.get(0).get(REF_NUMBER),body.get(0).get(PARTNER_ID),body.get(0).get(BUYER_EMAIL),body.get(0).get(PUBLIC_BUYER_ID))" ref="paymentReq"/>
+            <marshal id="_marshal21">
+                <json library="Jackson"/>
+            </marshal>
+            <to id="_to21" uri="https4://dev.openapi.ayopop.id/api/v1/bill/payment"/>
+            <convertBodyTo id="_convertBodyTo21" type="java.lang.String"/>
+            <unmarshal id="_input_to_pojo2">
+                <custom ref="ayopop_payment_dataformat"/>
+            </unmarshal>
+            <log id="_Check Parse2" message="Check Parse Data inquiryId : ${body.inquiryId}"/>
+            <bean id="_bean22"
+                method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" ref="preGenerateFLPayment"/>
+            <marshal id="_marshal22">
+                <flatpack definition="PaymentFlconfigIn.xml" fixed="true"/>
+            </marshal>
+        </route>
+        <route id="_status">
+            <from id="_from3" uri="direct:status"/>
+            <log id="_Input3" message="Input Message : ${body}"/>
+            <unmarshal id="_FL3">
+                <flatpack definition="StatusFlconfigOut.xml" fixed="true"/>
+            </unmarshal>
+            <log id="_log31" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+            <bean id="_bean31"
+                method="assignValue(body.get(0).get(PARTNER_ID),body.get(0).get(REF_NUMBER))" ref="statusReq"/>
+            <marshal id="_marshal31">
+                <json library="Jackson"/>
+            </marshal>
+            <to id="_to31" uri="https4://dev.openapi.ayopop.id/api/v1/bill/status"/>
+            <convertBodyTo id="_convertBodyTo31" type="java.lang.String"/>
+            <unmarshal id="_input_to_pojo3">
+                <custom ref="ayopop_status_dataformat"/>
+            </unmarshal>
+            <log id="_Check Parse3" message="Check Parse Data inquiryId : ${body.inquiryId}"/>
+            <bean id="_bean32"
+                method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" ref="preGenerateFLStatus"/>
+            <marshal id="_marshal32">
+                <flatpack definition="StatusFlconfigIn.xml" fixed="true"/>
+            </marshal>
+        </route>
+        <route id="_balance">
+            <from id="_from5" uri="direct:balance"/>
+            <log id="_Input4" message="Input Message : ${body}"/>
+            <unmarshal id="_FL4">
+                <flatpack definition="BalanceFlconfigOut.xml" fixed="true"/>
+            </unmarshal>
+            <log id="_log41" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+            <bean id="_bean41"
+                method="assignValue(body.get(0).get(PARTNER_ID))" ref="balanceReq"/>
+            <marshal id="_marshal41">
+                <json library="Jackson"/>
+            </marshal>
+            <to id="_to41" uri="https4://dev.openapi.ayopop.id/api/v1/partner/balance"/>
+            <convertBodyTo id="_convertBodyTo41" type="java.lang.String"/>
+            <unmarshal id="_input_to_pojo4">
+                <custom ref="ayopop_balance_dataformat"/>
+            </unmarshal>
+            <log id="_Check Parse4" message="Check Parse Data inquiryId : ${body.inquiryId}"/>
+            <bean id="_bean42"
+                method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" ref="preGenerateFLBalance"/>
+            <marshal id="_marshal42">
+                <flatpack definition="BalanceFlconfigIn.xml" fixed="true"/>
+            </marshal>
+        </route>
+        <!-- <route id="_productlist"> <from id="_from6" uri="direct:productlist"/> 
+			<log id="_Input5" message="Input Message : ${body}"/> <unmarshal id="_FL5"> 
+			<flatpack definition="ProductlistFlconfigOut.xml" fixed="true"/> </unmarshal> 
+			<log id="_log51" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/> 
+			<bean id="_bean51" method="assignValue(body.get(0).get(PARTNER_ID))" ref="productlistReq"/> 
+			<marshal id="_marshal51"> <json library="Jackson"/> </marshal> <process id="_setHeader5" 
+			ref="generateJwt"/> <to id="_to51" uri="https4://dev.openapi.ayopop.id/api/v1/partner/products"/> 
+			<convertBodyTo id="_convertBodyTo51" type="java.lang.String"/> <unmarshal 
+			id="_input_to_pojo5"> <custom ref="ayopop_productlist_dataformat"/> </unmarshal> 
+			<log id="_Check Parse5" message="Check Parse Data inquiryId : ${body.inquiryId}"/> 
+			<bean id="_bean52" method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" 
+			ref="preGenerateFLProductlist"/> <marshal id="_marshal52"> <flatpack definition="ProductlistFlconfigIn.xml" 
+			fixed="true"/> </marshal> </route> -->
+        <route id="_productlist">
+            <from id="_from6" uri="direct:productlist"/>
+            <log id="_Input5" message="Input Message : ${body}"/>
+            <setProperty id="_setProperty1" propertyName="TRX">
+                <simple>productlist</simple>
+            </setProperty>
+            <!-- <to id="_to51" uri="https4://dev.openapi.ayopop.id/api/v1/partner/products"/> 
+				<convertBodyTo id="_convertBodyTo51" type="java.lang.String"/> <unmarshal 
+				id="_input_to_pojo5"> <custom ref="ayopop_productlist_dataformat"/> </unmarshal> 
+				<marshal id="_marshal3"> <json library="Jackson"/> </marshal> -->
+            <setBody id="_setBody2">
+                <simple/>
+            </setBody>
+            <to id="_to2" uri="https4://dev.openapi.ayopop.id/api/v1/partner/products?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+        </route>
+        <route id="_callback">
+            <from id="_from4" uri="direct:callback"/>
+            <setBody id="_setBody1">
+                <simple>test</simple>
+            </setBody>
+        </route>
+    </camelContext>
+    <bean class="hana.integ.ayopop.util.JWTUtil" id="JwtUtil" scope="singleton"/>
+    <bean class="hana.integ.ayopop.GenerateToken" id="generateJwt" scope="singleton"/>
+    <bean class="hana.integ.ayopop.req.InquiryReq" id="inquiryReq" scope="singleton"/>
+    <bean class="hana.integ.ayopop.req.PaymentReq" id="paymentReq" scope="singleton"/>
+    <bean class="hana.integ.ayopop.req.BalanceReq" id="balanceReq" scope="singleton"/>
+    <bean class="hana.integ.ayopop.req.ProductListReq"
+        id="productlistReq" scope="singleton"/>
+    <bean class="hana.integ.ayopop.req.StatusReq" id="statusReq" scope="singleton"/>
+    <bean class="hana.integ.ayopop.InquiryPreGenerateFixedLength"
+        id="preGenerateFLInquiry" scope="singleton"/>
+    <bean class="hana.integ.ayopop.PaymentPreGenerateFixedLength"
+        id="preGenerateFLPayment" scope="singleton"/>
+    <bean class="hana.integ.ayopop.StatusPreGenerateFixedLength"
+        id="preGenerateFLStatus" scope="singleton"/>
+    <bean class="hana.integ.ayopop.BalancePreGenerateFixedLength"
+        id="preGenerateFLBalance" scope="singleton"/>
+    <bean class="hana.integ.ayopop.ProductListPreGenerateFixedLength"
+        id="preGenerateFLProductlist" scope="singleton"/>
+    <bean class="hana.integ.ayopop.util.SSLRegistry" id="sslRegistry" scope="singleton"/>
+    <bean class="hana.integ.ayopop.GenerateRequestInquiry"
+        id="requestInquiry" scope="singleton"/>
+    <bean class="hana.integ.ayopop.util.AdditionalFields"
+        id="addAdditionalFields" scope="singleton"/>
+    <!-- ChannelBuffer/ByteBuf to String -->
+    <bean class="org.jboss.netty.handler.codec.string.StringDecoder" id="stringDecoder"/>
+    <!-- String to ChannelBuffer/ByteBuf -->
+    <bean class="org.jboss.netty.handler.codec.string.StringEncoder" id="stringEncoder"/>
+</beans>
