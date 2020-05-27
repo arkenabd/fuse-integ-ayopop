@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="java.util.Properties" id="myProperties"/>
+    <bean
+        class="org.apache.camel.component.properties.PropertiesComponent" id="properties">
+        <property name="cache" value="false"/>
+        <property name="location" value="classpath:application.properties"/>
+        <property name="overrideProperties" ref="myProperties"/>
+    </bean>
     <camelContext id="camel" streamCache="true" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
@@ -14,7 +21,7 @@
                 enableJaxbAnnotationModule="false"
                 id="ayopop_payment_dataformat" library="Jackson"
                 prettyPrint="false"
-                unmarshalTypeName="hana.integ.ayopop.resp.inquiry.InquiryDataPostPaid" useDefaultObjectMapper="true"/>
+                unmarshalTypeName="hana.integ.ayopop.resp.payment.PaymentPostpaidResp" useDefaultObjectMapper="true"/>
             <json allowJmsType="true" allowUnmarshallType="true"
                 contentTypeHeader="false"
                 enableJaxbAnnotationModule="false"
@@ -64,8 +71,20 @@
         <route id="_inquiry">
             <!-- <from id="_to3" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
             <from id="_to4" uri="direct:inquiry"/>
+            <process id="_Init_Strategy_inq" ref="killRoute"/>
             <doTry id="_doTry1">
                 <log id="_Input" message="Input Message : ${body}"/>
+                <setProperty id="_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
+                    <simple>${body}</simple>
+                </setProperty>
+                <to id="_to3" uri="direct:getseqnum"/>
+                <setProperty id="_setProperty2" propertyName="counter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <log id="_log6" message="GET Sequence number value : ${exchangeProperty[counter]}"/>
+                <setBody id="_setBody4">
+                    <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+                </setBody>
                 <unmarshal id="_FL">
                     <flatpack definition="InquiryFlconfigOut.xml" fixed="true"/>
                 </unmarshal>
@@ -103,7 +122,7 @@
                     <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-                    <log id="co_log9" message="Error       Message : ${exception.message}"/>
+                    <log id="co_log9" message="Error Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13">
                         <constant>500</constant>
                     </setHeader>
@@ -114,29 +133,82 @@
             </doTry>
         </route>
         <route id="_payment">
-            <from id="_from2" uri="direct:payment"/>
-            <log id="_Input2" message="Input Message : ${body}"/>
-            <unmarshal id="_FL2">
-                <flatpack definition="PaymentFlconfigOut.xml" fixed="true"/>
-            </unmarshal>
-            <log id="_log21" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
-            <bean id="_bean21"
-                method="assignValue(body.get(0).get(INQUIRY_ID),body.get(0).get(ACCOUNT_NUMBER),body.get(0).get(PRODUCT_CODE),body.get(0).get(AMOUNT),body.get(0).get(REF_NUMBER),body.get(0).get(PARTNER_ID),body.get(0).get(BUYER_EMAIL),body.get(0).get(PUBLIC_BUYER_ID))" ref="paymentReq"/>
-            <marshal id="_marshal21">
-                <json library="Jackson"/>
-            </marshal>
-            <to id="_to21" uri="https4://dev.openapi.ayopop.id/api/v1/bill/payment"/>
-            <convertBodyTo id="_convertBodyTo21" type="java.lang.String"/>
-            <unmarshal id="_input_to_pojo2">
-                <custom ref="ayopop_payment_dataformat"/>
-            </unmarshal>
-            <log id="_Check Parse2" message="Check Parse Data inquiryId : ${body.inquiryId}"/>
-            <bean id="_bean22"
-                method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" ref="preGenerateFLPayment"/>
-            <marshal id="_marshal22">
-                <flatpack definition="PaymentFlconfigIn.xml" fixed="true"/>
-            </marshal>
+            <!-- <from id="_to3_pay" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
+            <from id="_to4_pay" uri="direct:payment"/>
+            <process id="_Init_Strategy_pay" ref="killRoute"/>
+            <doTry id="_doTry1_pay">
+                <log id="_Input_pay" message="Input Message : ${body}"/>
+                <setProperty id="_setProperty3_pay" propertyName="bodyBeforeCallGetSeqNum">
+                    <simple>${body}</simple>
+                </setProperty>
+                <to id="_to3_pay" uri="direct:getseqnum"/>
+                <setProperty id="_setProperty2_pay" propertyName="counter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <log id="_log6_pay" message="GET Sequence number value : ${exchangeProperty[counter]}"/>
+                <setBody id="_setBody4_pay">
+                    <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+                </setBody>
+                <unmarshal id="_FL_pay">
+                    <flatpack definition="PaymentFlconfigOut.xml" fixed="true"/>
+                </unmarshal>
+                <log id="_log1_pay" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+                <bean id="_bean1_pay"
+                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)})" ref="requestPayment"/>
+                <setBody id="_setBody3_pay">
+                    <simple/>
+                </setBody>
+                <to id="_to1_pay" uri="https4://dev.openapi.ayopop.id/api/v1/bill/payment?bridgeEndpoint=true&amp;connectionClose=true&amp;throwExceptionOnFailure=false"/>
+                <log id="_log3_pay" message="Response Ayopop Inquiry : ${body}"/>
+                <bean id="_bean3_pay"
+                    method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
+                <convertBodyTo id="_convertBodyTo1_pay" type="java.lang.String"/>
+                <unmarshal id="_input_to_pojo_pay">
+                    <custom ref="ayopop_payment_dataformat"/>
+                </unmarshal>
+                <log id="_Check Parse_pay" message="Check Parse Data responseCode : ${body.responseCode}"/>
+                <bean id="_bean2_pay"
+                    method="generate(${body.responseCode},${body.data.inquiryId},${body.data.accountNumber},${body.data.customerName},${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},${body.data.validity})" ref="preGenerateFLPayment"/>
+                <log id="_log4_pay" message="List Map Value : ${body}"/>
+                <marshal id="_marshal2_pay">
+                    <flatpack definition="InquiryFlconfigIn.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
+                </marshal>
+                <log id="_log2_pay" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
+                <convertBodyTo id="_convertBodyTo2_pay" type="java.lang.String"/>
+                <bean id="_bean4_pay" method="concatenate(${body})" ref="addAdditionalFields"/>
+                <log id="_log5_pay" message="Fixed Length Message Final : ${body}"/>
+                <doCatch id="_doCatch1_pay">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <log id="co_log9_pay" message="Error Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13_pay">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="co_setBody6_pay">
+                        <simple/>
+                    </setBody>
+                </doCatch>
+            </doTry>
         </route>
+        <!-- <route id="_payment"> <from id="_from2" uri="direct:payment"/> <log 
+			id="_Input2" message="Input Message : ${body}"/> <unmarshal id="_FL2"> <flatpack 
+			definition="PaymentFlconfigOut.xml" fixed="true"/> </unmarshal> <log id="_log21" 
+			message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/> <bean id="_bean21" 
+			method="assignValue(body.get(0).get(INQUIRY_ID),body.get(0).get(ACCOUNT_NUMBER),body.get(0).get(PRODUCT_CODE),body.get(0).get(AMOUNT),body.get(0).get(REF_NUMBER),body.get(0).get(PARTNER_ID),body.get(0).get(BUYER_EMAIL),body.get(0).get(PUBLIC_BUYER_ID))" 
+			ref="paymentReq"/> <marshal id="_marshal21"> <json library="Jackson"/> </marshal> 
+			<to id="_to21" uri="https4://dev.openapi.ayopop.id/api/v1/bill/payment"/> 
+			<convertBodyTo id="_convertBodyTo21" type="java.lang.String"/> <unmarshal 
+			id="_input_to_pojo2"> <custom ref="ayopop_payment_dataformat"/> </unmarshal> 
+			<log id="_Check Parse2" message="Check Parse Data inquiryId : ${body.inquiryId}"/> 
+			<bean id="_bean22" method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" 
+			ref="preGenerateFLPayment"/> <marshal id="_marshal22"> <flatpack definition="PaymentFlconfigIn.xml" 
+			fixed="true"/> </marshal> </route> -->
         <route id="_status">
             <from id="_from3" uri="direct:status"/>
             <log id="_Input3" message="Input Message : ${body}"/>
@@ -219,6 +291,24 @@
                 <simple>test</simple>
             </setBody>
         </route>
+        <route id="_get_Seq_ayp">
+            <from id="_from31_ayp" uri="direct:getseqnum"/>
+            <log id="_Current_SeqNum_ayp" message="Sequence number from value ${properties:test} to value (${properties:test} + 1)"/>
+            <setProperty id="_SeqNum_ayp" propertyName="counter">
+                <simple>${properties:test}</simple>
+            </setProperty>
+            <bean id="_bean1_ayp" ref="generateCounter"/>
+            <log id="_New_SeqNum_ayp" message="New value is ${body}"/>
+        </route>
+        <route id="_Quartz_ayp">
+            <from id="_to3_ayp" uri="quartz:groupName/timerName?cron=0 0 0 1/1 * ? *"/>
+            <to id="_to1_ayp" uri="direct:quartzTask"/>
+        </route>
+        <route id="_refresh_Seq_ayp">
+            <from id="_to2_ayp" uri="direct:quartzTask"/>
+            <log id="_log12_ayp" message="This task is triggered from Quartz, for refresh sequence"/>
+            <process id="_refresh_Counter_ayp" ref="refreshCounter"/>
+        </route>
     </camelContext>
     <bean class="hana.integ.ayopop.util.JWTUtil" id="JwtUtil" scope="singleton"/>
     <bean class="hana.integ.ayopop.GenerateToken" id="generateJwt" scope="singleton"/>
@@ -241,8 +331,13 @@
     <bean class="hana.integ.ayopop.util.SSLRegistry" id="sslRegistry" scope="singleton"/>
     <bean class="hana.integ.ayopop.GenerateRequestInquiry"
         id="requestInquiry" scope="singleton"/>
+    <bean class="hana.integ.ayopop.GenerateRequestPayment"
+        id="requestPayment" scope="singleton"/>
     <bean class="hana.integ.ayopop.util.AdditionalFields"
         id="addAdditionalFields" scope="singleton"/>
+    <bean class="hana.integ.ayopop.GenerateCounter" id="generateCounter" scope="singleton"/>
+    <bean class="hana.integ.ayopop.RefreshCounter" id="refreshCounter" scope="singleton"/>
+    <bean class="hana.integ.ayopop.KillRoute" id="killRoute" scope="singleton"/>
     <!-- ChannelBuffer/ByteBuf to String -->
     <bean class="org.jboss.netty.handler.codec.string.StringDecoder" id="stringDecoder"/>
     <!-- String to ChannelBuffer/ByteBuf -->

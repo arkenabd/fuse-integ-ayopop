@@ -9,39 +9,10 @@ public class AdditionalFields {
 
 	public void generateAdditionalField(String jsonString, Exchange exchange) {
 		System.out.println("=====[Start] Generate Additional Fields=====");
-		JSONObject obj = new JSONObject(jsonString);
-		String customerDetail = "";
-		String billDetails = "";
-		String productDetails = "";
-		String extraFields = "";
-
-		try {
-			customerDetail = obj.getJSONObject("data").getJSONArray("customerDetail").toString().trim();
-		} catch (JSONException e) {
-			customerDetail = "";
-		}
-		try {
-			billDetails = obj.getJSONObject("data").getJSONArray("billDetails").toString().trim();
-		} catch (JSONException e) {
-			billDetails = "";
-		}
-		try {
-			productDetails = obj.getJSONObject("data").getJSONArray("productDetails").toString().trim();
-		} catch (JSONException e) {
-			productDetails = "";
-		}
-		try {
-			extraFields = obj.getJSONObject("data").getJSONArray("extraFields").toString().trim();
-		} catch (JSONException e) {
-			extraFields = "";
-		}
-
-		System.out.println("customerDetail :" + customerDetail);
-		System.out.println("billDetails :" + billDetails);
-		System.out.println("productDetails :" + productDetails);
-		System.out.println("extraFields :" + extraFields);
-		exchange.setProperty("additionalFields",
-				customerDetail + "," + billDetails + "," + productDetails + "," + extraFields);
+		String additionalField = "{"
+				+ jsonString.substring(jsonString.indexOf("customerDetail"), jsonString.length() - 1);
+		System.out.println(additionalField.replaceAll("[\r\n ]", ""));
+		exchange.setProperty("additionalFields", additionalField);
 		System.out.println("additionalFields :" + exchange.getProperty("additionalFields"));
 		System.out.println("=====[Finish] Generate Additional Fields=====");
 	}
@@ -52,7 +23,7 @@ public class AdditionalFields {
 		System.out.println("body length:" + body.toString().replace("\n", "").replace("\r", "").length());
 		System.out.println("additionalFields :" + exchange.getProperty("additionalFields").toString().trim());
 		System.out.println("additionalFields length :" + exchange.getProperty("additionalFields").toString().length());
-		String output = body.toString().replace("\n", "").replace("\r", "")
+		String output = body.toString().replaceAll("[\r\n]", "")
 				+ exchange.getProperty("additionalFields").toString().trim();
 		System.out.println("=====[Finish] Concatenate body + Additional Fields=====");
 		return output;

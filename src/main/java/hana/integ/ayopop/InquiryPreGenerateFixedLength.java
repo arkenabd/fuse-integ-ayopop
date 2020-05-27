@@ -33,9 +33,12 @@ public class InquiryPreGenerateFixedLength {
 	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
 			String customerName, String productName, String productCode, String amount, String totalAdmin,
 			String validity, Exchange exchange) {
-//  Get length additional field
+		// Get counter
+		String existingCounter = exchange.getProperty("counter").toString();
+		// Get length additional field
 		int addFLength = exchange.getProperty("additionalFields").toString().length();
-//  Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 -> 05), (301 - 399 -> 05), (200 - 299 -> 68)	
+		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->
+		// 05), (301 - 399 -> 05), (200 - 299 -> 68)
 		int respCode = Integer.parseInt(responseCode);
 		String respCodeSubmit = "";
 		if ((respCode >= 0 && respCode <= 99) || respCode == 300) {
@@ -48,7 +51,6 @@ public class InquiryPreGenerateFixedLength {
 			respCodeSubmit = "68";
 		}
 
-//		String existingCounter = exchange.getProperty("counter").toString();
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
@@ -59,7 +61,7 @@ public class InquiryPreGenerateFixedLength {
 		String date = simpleDateFormat.format(new Date());
 		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI kalao outgoing HOBI
 		map.put("TRANSACTION_ID", StringUtils.rightPad(date, 14, " "));// yyyymmddhhmmss
-		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad("1", 6, "0"));
+		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(existingCounter, 6, "0"));
 		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
 		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPINQ", 7, " "));
 
@@ -78,7 +80,7 @@ public class InquiryPreGenerateFixedLength {
 				+ map.get("PROCESS_CODE").length() + map.get("RESP_CODE").length() + map.get("INQUIRY_ID").length()
 				+ map.get("ACCOUNT_NUMBER").length() + map.get("CUSTOMER_NAME").length()
 				+ map.get("PRODUCT_NAME").length() + map.get("PRODUCT_CODE").length() + map.get("AMOUNT").length()
-				+ map.get("TOTAL_ADMIN").length() + map.get("VALIDITY").length()+addFLength;
+				+ map.get("TOTAL_ADMIN").length() + map.get("VALIDITY").length() + addFLength;
 		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0"));
 		System.out.println("=====[Finish] Preparing fixed length response message to Hobis=====");
 		flResultList.add(map);
