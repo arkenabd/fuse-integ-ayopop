@@ -16,8 +16,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
 public class PaymentPreGenerateFixedLength {
 	public String randomNumeric(int n) {
@@ -32,42 +30,59 @@ public class PaymentPreGenerateFixedLength {
 		return RandomStringUtils.randomAlphanumeric(n);
 	}
 
-	public List<Map<String, String>> generate(String Timestamp, String ClientID, String Key, String BranchID,
-			String CounterID, String ProductType, String TrxType, String Detail_TrxId, String Detail_Token,
-			String Detail_noHP, String Detail_Amount, String Timeout, String VersiProgram, String RespCode,
-			String RespDetail, Exchange exchange) {
+	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
+			String customerName, String productName, String productCode, String amount, String totalAdmin,
+			String validity, Exchange exchange) {
+		// Get counter
 		String existingCounter = exchange.getProperty("counter").toString();
+		// Get length additional field
+		int addFLength = exchange.getProperty("additionalFields").toString().length();
+		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->
+		// 05), (301 - 399 -> 05), (200 - 299 -> 68)
+		int respCode = Integer.parseInt(responseCode);
+		String respCodeSubmit = "";
+		if ((respCode >= 0 && respCode <= 99) || respCode == 300) {
+			respCodeSubmit = "00";
+		}
+		if ((respCode >= 100 && respCode <= 199) || (respCode >= 301 && respCode <= 399)) {
+			respCodeSubmit = "05";
+		}
+		if (respCode >= 200 && respCode <= 299) {
+			respCodeSubmit = "68";
+		}
+
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
-		System.out.println("==============================================");
+		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
-		map.put("LENGTH", StringUtils.leftPad("183", 4, "0"));
+
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String date = simpleDateFormat.format(new Date());
-		System.out.println(date);
 		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI kalao outgoing HOBI
 		map.put("TRANSACTION_ID", StringUtils.rightPad(date, 14, " "));// yyyymmddhhmmss
 		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(existingCounter, 6, "0"));
-		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("TOKO", 6, " "));
-		map.put("PROCESS_CODE", StringUtils.rightPad("IDMCSHO", 7, " "));
-		map.put("TIMESTAMP", StringUtils.rightPad(Timestamp, 19, " "));
-		map.put("CLIENT_ID", StringUtils.rightPad(ClientID, 10, " "));
-		map.put("KEY", StringUtils.rightPad(Key, 10, " "));
-		map.put("BRANCH_ID", StringUtils.rightPad(BranchID, 4, " "));
-		map.put("COUNTER_ID", StringUtils.rightPad(CounterID, 4, " "));
-		map.put("PRODUCT_TYPE", StringUtils.rightPad(ProductType, 10, " "));
-		map.put("TRX_TYPE", StringUtils.rightPad(TrxType, 10, " "));
-		map.put("DETAIL_TRX_ID", StringUtils.rightPad(Detail_TrxId, 12, " "));
-		map.put("DETAIL_TOKEN", StringUtils.rightPad(Detail_Token, 9, " "));
-		map.put("DETAIL_NO_HP", StringUtils.rightPad(Detail_noHP, 15, " "));
-		map.put("DETAIL_AMOUNT", StringUtils.rightPad(Detail_Amount, 17, " "));
+		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
+		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPINQ", 7, " "));
 
-		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
-		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
-		map.put("RESP_CODE", StringUtils.rightPad(RespCode, 2, " "));
-		map.put("RESP_DETAIL", StringUtils.rightPad(RespDetail, 12, " "));
+		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
+		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
+		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 15, " "));
+		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
+		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
+		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 8, " "));
+		map.put("AMOUNT", StringUtils.rightPad(amount, 16, " "));
+		map.put("TOTAL_ADMIN", StringUtils.rightPad(totalAdmin, 12, " "));
+		map.put("VALIDITY", StringUtils.rightPad(validity, 8, " "));
 
+		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()
+				+ map.get("TRANSACTION_ID_SEQNUM").length() + map.get("CLIENT_ID_COMMON").length()
+				+ map.get("PROCESS_CODE").length() + map.get("RESP_CODE").length() + map.get("INQUIRY_ID").length()
+				+ map.get("ACCOUNT_NUMBER").length() + map.get("CUSTOMER_NAME").length()
+				+ map.get("PRODUCT_NAME").length() + map.get("PRODUCT_CODE").length() + map.get("AMOUNT").length()
+				+ map.get("TOTAL_ADMIN").length() + map.get("VALIDITY").length() + addFLength;
+		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0"));
+		System.out.println("=====[Finish] Preparing fixed length response message to Hobis=====");
 		flResultList.add(map);
 		return flResultList;
 	}
