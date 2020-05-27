@@ -86,7 +86,8 @@
                     <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
                 </setBody>
                 <unmarshal id="_FL">
-                    <flatpack definition="InquiryFlconfigOut.xml" fixed="true"/>
+                    <flatpack definition="InquiryFlconfigOut.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
                 <log id="_log1" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
                 <bean id="_bean1"
@@ -150,7 +151,8 @@
                     <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
                 </setBody>
                 <unmarshal id="_FL_pay">
-                    <flatpack definition="PaymentFlconfigOut.xml" fixed="true"/>
+                    <flatpack definition="PaymentFlconfigOut.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
                 <log id="_log1_pay" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
                 <setProperty id="_inquiryId" propertyName="inquiryId">
@@ -230,7 +232,8 @@
                     <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
                 </setBody>
                 <unmarshal id="_FL_sta">
-                    <flatpack definition="StatusFlconfigOut.xml" fixed="true"/>
+                    <flatpack definition="StatusFlconfigOut.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
                 <log id="_log1_sta" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
                 <bean id="_bean1_sta"
