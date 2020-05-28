@@ -34,8 +34,11 @@ public class GenerateRequestInquiry {
 		mapPayload.put("accountNumber", accoutnNumber);
 		mapPayload.put("productCode", productCode);
 
+//		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
+//				.addClaims(mapPayload).signWith(SignatureAlgorithm.HS256, base64Secret);
 		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
-				.addClaims(mapPayload).signWith(SignatureAlgorithm.HS256, base64Secret);
+				.claim("partnerId", partnerId).claim("accountNumber", accoutnNumber)
+				.claim("productCode", productCode).signWith(SignatureAlgorithm.HS256, base64Secret);
 
 		token = builder.compact();
 
