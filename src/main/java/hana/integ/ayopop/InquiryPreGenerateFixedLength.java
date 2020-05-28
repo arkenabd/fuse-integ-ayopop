@@ -81,7 +81,7 @@ public class InquiryPreGenerateFixedLength {
 				+ map.get("ACCOUNT_NUMBER").length() + map.get("CUSTOMER_NAME").length()
 				+ map.get("PRODUCT_NAME").length() + map.get("PRODUCT_CODE").length() + map.get("AMOUNT").length()
 				+ map.get("TOTAL_ADMIN").length() + map.get("VALIDITY").length() + addFLength;
-		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0"));
+		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0").replaceAll("\\s+",""));
 		System.out.println("=====[Finish] Preparing fixed length response message to Hobis=====");
 		flResultList.add(map);
 		return flResultList;
