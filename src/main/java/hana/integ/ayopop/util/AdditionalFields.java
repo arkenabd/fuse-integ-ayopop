@@ -26,7 +26,7 @@ public class AdditionalFields {
 		String output = body.toString().replaceAll("[\r\n]", "")
 				+ exchange.getProperty("additionalFields").toString().trim();
 		System.out.println("=====[Finish] Concatenate body + Additional Fields=====");
-		return output;
+		return output.replaceAll("[\r\n]", "").trim();
 	}
 
 }
