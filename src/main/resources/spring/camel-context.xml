@@ -91,7 +91,7 @@
                 </unmarshal>
                 <log id="_log1" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
                 <bean id="_bean1"
-                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)})" ref="requestInquiry"/>
+                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(ZONE_ID)},${body.get(0).get(MONTH)})" ref="requestInquiry"/>
                 <setBody id="_setBody3">
                     <simple/>
                 </setBody>

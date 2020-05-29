@@ -71,8 +71,8 @@ public class InquiryPreGenerateFixedLength {
 		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
 		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 8, " "));
-		map.put("AMOUNT", StringUtils.rightPad(amount, 16, " "));
-		map.put("TOTAL_ADMIN", StringUtils.rightPad(totalAdmin, 12, " "));
+		map.put("AMOUNT", StringUtils.leftPad(amount+"00", 16, "0"));
+		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin+"00", 12, "0"));
 		map.put("VALIDITY", StringUtils.rightPad(validity, 8, " "));
 
 		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()

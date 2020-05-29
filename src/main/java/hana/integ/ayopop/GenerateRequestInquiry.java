@@ -15,7 +15,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class GenerateRequestInquiry {
 
-	public void process(String accoutnNumber, String productCode, Exchange exchange) throws Exception {
+	public void process(String accoutnNumber, String productCode, String zoneId, String month, Exchange exchange)
+			throws Exception {
 		// TODO Auto-generated method stub
 		PropertiesComponent pc = exchange.getContext().getComponent("properties", PropertiesComponent.class);
 		pc.setLocation("classpath:application.properties");
@@ -24,21 +25,40 @@ public class GenerateRequestInquiry {
 		String partnerId = "mGKm25W0454v";
 		String apiSecret = "0eN7R4uR1pxJvwJV7rAkfpQ5TTKCkanfhwN";
 		String token = "";
+		// Check value zoneId and month
+		try {
+			System.out.println("zoneId :" + zoneId);
+			if (zoneId.length() == 0) {
+				zoneId = "-";
+			}
+		} catch (Exception e) {
+			zoneId = "-";
+		}
+		try {
+			System.out.println("month :" + month);
+			if (month.length() == 0) {
+				month = "-";
+			}
+		} catch (Exception e) {
+			month = "-";
+		}
 
 		// Generate Token
 		String key = apiSecret;
 		String base64Secret = DatatypeConverter.printBase64Binary(key.getBytes());
-		// Payload
-		HashMap<String, Object> mapPayload = new HashMap<String, Object>();
-		mapPayload.put("partnerId", partnerId);
-		mapPayload.put("accountNumber", accoutnNumber);
-		mapPayload.put("productCode", productCode);
 
 //		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
 //				.addClaims(mapPayload).signWith(SignatureAlgorithm.HS256, base64Secret);
 		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
-				.claim("partnerId", partnerId).claim("accountNumber", accoutnNumber)
-				.claim("productCode", productCode).signWith(SignatureAlgorithm.HS256, base64Secret);
+				.claim("partnerId", partnerId).claim("accountNumber", accoutnNumber).claim("productCode", productCode);
+		if (zoneId != ("-")) {
+			builder.claim("zoneId", zoneId);
+		}
+		if (month != ("-")) {
+			builder.claim("month", Long.parseLong(month));
+		}
+
+		builder.signWith(SignatureAlgorithm.HS256, base64Secret);
 
 		token = builder.compact();
 

@@ -11,7 +11,7 @@
 	<COLUMN name="CLIENT_ID_COMMON" length="6" />
 	<COLUMN name="PROCESS_CODE" length="7" />
 	<COLUMN name="ACCOUNT_NUMBER" length="20" />
-	<COLUMN name="PRODUCT_CODE" length="15" />
+	<COLUMN name="PRODUCT_CODE" length="20" />
 	<COLUMN name="ZONE_ID" length="4" />
 	<COLUMN name="MONTH" length="2" />
 </PZMAP> 
