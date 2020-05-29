@@ -67,12 +67,12 @@ public class PaymentPreGenerateFixedLength {
 
 		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
 		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
-		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 15, " "));
+		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
 		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
-		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 8, " "));
-		map.put("AMOUNT", StringUtils.rightPad(amount, 16, " "));
-		map.put("TOTAL_ADMIN", StringUtils.rightPad(totalAdmin, 12, " "));
+		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 20, " "));
+		map.put("AMOUNT", StringUtils.leftPad(amount, 16, "0"));
+		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin, 12, "0"));
 		map.put("VALIDITY", StringUtils.rightPad(validity, 8, " "));
 
 		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()

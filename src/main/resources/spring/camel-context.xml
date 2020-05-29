@@ -90,6 +90,12 @@
                         fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
                 <log id="_log1" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+                <setProperty id="_transId" propertyName="transId">
+                    <simple>${body.get(0).get(TRANSACTION_ID)}</simple>
+                </setProperty>
+                <setProperty id="_transSeqNum" propertyName="transSeqNum">
+                    <simple>${body.get(0).get(TRANSACTION_ID_SEQNUM)}</simple>
+                </setProperty>
                 <bean id="_bean1"
                     method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(ZONE_ID)},${body.get(0).get(MONTH)})" ref="requestInquiry"/>
                 <setBody id="_setBody3">
@@ -105,7 +111,7 @@
                 </unmarshal>
                 <log id="_Check Parse" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2"
-                    method="generate(${body.responseCode},${body.data.inquiryId},${body.data.accountNumber},${body.data.customerName},${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},${body.data.validity})" ref="preGenerateFLInquiry"/>
+                    method="generate(${body.responseCode},${body.data.inquiryId},${body.data.accountNumber},${body.data.customerName},${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},${body.data.validity},${exchangeProperty[transId]},${exchangeProperty[transSeqNum]})" ref="preGenerateFLInquiry"/>
                 <log id="_log4" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2">
                     <flatpack definition="InquiryFlconfigIn.xml"

@@ -32,7 +32,7 @@ public class InquiryPreGenerateFixedLength {
 
 	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
 			String customerName, String productName, String productCode, String amount, String totalAdmin,
-			String validity, Exchange exchange) {
+			String validity, String transId, String transSeqNum, Exchange exchange) {
 		// Get counter
 		String existingCounter = exchange.getProperty("counter").toString();
 		// Get length additional field
@@ -59,9 +59,9 @@ public class InquiryPreGenerateFixedLength {
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String date = simpleDateFormat.format(new Date());
-		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI kalao outgoing HOBI
-		map.put("TRANSACTION_ID", StringUtils.rightPad(date, 14, " "));// yyyymmddhhmmss
-		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(existingCounter, 6, "0"));
+		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI, outgoing HOBI
+		map.put("TRANSACTION_ID", StringUtils.rightPad(transId, 14, " "));// yyyymmddhhmmss
+		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(transSeqNum, 6, "0"));
 		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
 		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPINQ", 7, " "));
 
@@ -71,8 +71,8 @@ public class InquiryPreGenerateFixedLength {
 		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
 		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 20, " "));
-		map.put("AMOUNT", StringUtils.leftPad(amount+"00", 16, "0"));
-		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin+"00", 12, "0"));
+		map.put("AMOUNT", StringUtils.leftPad(amount + "00", 16, "0"));
+		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin + "00", 12, "0"));
 		map.put("VALIDITY", StringUtils.rightPad(validity, 8, " "));
 
 		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()
