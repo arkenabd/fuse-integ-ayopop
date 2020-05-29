@@ -32,7 +32,7 @@ public class InquiryPreGenerateFixedLength {
 
 	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
 			String customerName, String productName, String productCode, String amount, String totalAdmin,
-			String validity, String transId, String transSeqNum, Exchange exchange) {
+			String validity, String transId, String transSeqNum, String messageEn, Exchange exchange) {
 		// Get counter
 		String existingCounter = exchange.getProperty("counter").toString();
 		// Get length additional field
@@ -68,7 +68,12 @@ public class InquiryPreGenerateFixedLength {
 		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
 		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
 		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
-		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
+		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
+			map.put("CUSTOMER_NAME", StringUtils.rightPad(messageEn, 30, " "));
+		} else {
+			map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
+		} // jika code 05 atau 68 disii dengan
+			// reason :EN
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
 		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 20, " "));
 		map.put("AMOUNT", StringUtils.leftPad(amount + "00", 16, "0"));

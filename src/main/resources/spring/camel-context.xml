@@ -111,7 +111,7 @@
                 </unmarshal>
                 <log id="_Check Parse" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2"
-                    method="generate(${body.responseCode},${body.data.inquiryId},${body.data.accountNumber},${body.data.customerName},${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},${body.data.validity},${exchangeProperty[transId]},${exchangeProperty[transSeqNum]})" ref="preGenerateFLInquiry"/>
+                    method="generate(${body.responseCode},${body.data.inquiryId},${body.data.accountNumber},${body.data.customerName},${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},${body.data.validity},${exchangeProperty[transId]},${exchangeProperty[transSeqNum]},${body.message.eN})" ref="preGenerateFLInquiry"/>
                 <log id="_log4" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2">
                     <flatpack definition="InquiryFlconfigIn.xml"

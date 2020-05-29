@@ -29,14 +29,14 @@ public class InquiryDataPrepaid {
 	private Integer totalAdmin;
 	@JsonProperty("validity")
 	private String validity;
-	@JsonProperty("customerDetail")
-	private List<Object> customerDetail = null;
-	@JsonProperty("billDetails")
-	private List<Object> billDetails = null;
-	@JsonProperty("productDetails")
-	private List<Object> productDetails = null;
-	@JsonProperty("extraFields")
-	private List<Object> extraFields = null;
+//	@JsonProperty("customerDetail")
+//	private List<Object> customerDetail = null;
+//	@JsonProperty("billDetails")
+//	private List<Object> billDetails = null;
+//	@JsonProperty("productDetails")
+//	private List<Object> productDetails = null;
+//	@JsonProperty("extraFields")
+//	private List<Object> extraFields = null;
 
 	@JsonProperty("inquiryId")
 	public Integer getInquiryId() {
@@ -128,44 +128,44 @@ public class InquiryDataPrepaid {
 		this.validity = validity;
 	}
 
-	@JsonProperty("customerDetail")
-	public List<Object> getCustomerDetail() {
-		return customerDetail;
-	}
-
-	@JsonProperty("customerDetail")
-	public void setCustomerDetail(List<Object> customerDetail) {
-		this.customerDetail = customerDetail;
-	}
-
-	@JsonProperty("billDetails")
-	public List<Object> getBillDetails() {
-		return billDetails;
-	}
-
-	@JsonProperty("billDetails")
-	public void setBillDetails(List<Object> billDetails) {
-		this.billDetails = billDetails;
-	}
-
-	@JsonProperty("productDetails")
-	public List<Object> getProductDetails() {
-		return productDetails;
-	}
-
-	@JsonProperty("productDetails")
-	public void setProductDetails(List<Object> productDetails) {
-		this.productDetails = productDetails;
-	}
-
-	@JsonProperty("extraFields")
-	public List<Object> getExtraFields() {
-		return extraFields;
-	}
-
-	@JsonProperty("extraFields")
-	public void setExtraFields(List<Object> extraFields) {
-		this.extraFields = extraFields;
-	}
+//	@JsonProperty("customerDetail")
+//	public List<Object> getCustomerDetail() {
+//		return customerDetail;
+//	}
+//
+//	@JsonProperty("customerDetail")
+//	public void setCustomerDetail(List<Object> customerDetail) {
+//		this.customerDetail = customerDetail;
+//	}
+//
+//	@JsonProperty("billDetails")
+//	public List<Object> getBillDetails() {
+//		return billDetails;
+//	}
+//
+//	@JsonProperty("billDetails")
+//	public void setBillDetails(List<Object> billDetails) {
+//		this.billDetails = billDetails;
+//	}
+//
+//	@JsonProperty("productDetails")
+//	public List<Object> getProductDetails() {
+//		return productDetails;
+//	}
+//
+//	@JsonProperty("productDetails")
+//	public void setProductDetails(List<Object> productDetails) {
+//		this.productDetails = productDetails;
+//	}
+//
+//	@JsonProperty("extraFields")
+//	public List<Object> getExtraFields() {
+//		return extraFields;
+//	}
+//
+//	@JsonProperty("extraFields")
+//	public void setExtraFields(List<Object> extraFields) {
+//		this.extraFields = extraFields;
+//	}
 
 }
