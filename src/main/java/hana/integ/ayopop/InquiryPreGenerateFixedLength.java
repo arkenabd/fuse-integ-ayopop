@@ -69,7 +69,7 @@ public class InquiryPreGenerateFixedLength {
 		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
 		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
 		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
-			map.put("CUSTOMER_NAME", StringUtils.rightPad(messageEn, 30, " "));
+			map.put("CUSTOMER_NAME", StringUtils.rightPad(messageEn.substring(0, 30), 30, " "));
 		} else {
 			map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		} // jika code 05 atau 68 disii dengan
