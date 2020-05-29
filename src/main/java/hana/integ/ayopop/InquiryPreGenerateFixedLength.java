@@ -67,10 +67,10 @@ public class InquiryPreGenerateFixedLength {
 
 		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
 		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
-		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 15, " "));
+		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
 		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
-		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 8, " "));
+		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 20, " "));
 		map.put("AMOUNT", StringUtils.leftPad(amount+"00", 16, "0"));
 		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin+"00", 12, "0"));
 		map.put("VALIDITY", StringUtils.rightPad(validity, 8, " "));
@@ -81,7 +81,7 @@ public class InquiryPreGenerateFixedLength {
 				+ map.get("ACCOUNT_NUMBER").length() + map.get("CUSTOMER_NAME").length()
 				+ map.get("PRODUCT_NAME").length() + map.get("PRODUCT_CODE").length() + map.get("AMOUNT").length()
 				+ map.get("TOTAL_ADMIN").length() + map.get("VALIDITY").length() + addFLength;
-		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0").replaceAll("\\s+",""));
+		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0"));
 		System.out.println("=====[Finish] Preparing fixed length response message to Hobis=====");
 		flResultList.add(map);
 		return flResultList;
