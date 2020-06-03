@@ -54,20 +54,7 @@ public class InquiryPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
-
-		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
-		String pattern = "yyyyMMddHHmmss";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		String date = simpleDateFormat.format(new Date());
-		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI, outgoing HOBI
-		map.put("TRANSACTION_ID", StringUtils.rightPad(transId, 14, " "));// yyyymmddhhmmss
-		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(transSeqNum, 6, "0"));
-		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
-		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPINQ", 7, " "));
-
-		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
-		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
-		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
+		// Substring all field based on FL config
 		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
 			int length = messageEn.length();
 			if (length <= 46) {
@@ -80,6 +67,33 @@ public class InquiryPreGenerateFixedLength {
 			map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		} // jika code 05 atau 68 disii dengan
 			// reason :EN
+		if (productName.length() > 30) {
+			productName = productName.substring(0, 30);
+		}
+		if (productCode.length() > 20) {
+			productCode = productCode.substring(0, 20);
+		}
+		if (amount.length() > 16) {
+			amount = amount.substring(0, 16);
+		}
+		if (totalAdmin.length() > 12) {
+			totalAdmin = totalAdmin.substring(0, 12);
+		}
+		if (validity.length() > 8) {
+			validity = validity.substring(0, 16);
+		}
+		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
+		String pattern = "yyyyMMddHHmmss";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String date = simpleDateFormat.format(new Date());
+		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI, outgoing HOBI
+		map.put("TRANSACTION_ID", StringUtils.rightPad(transId, 14, " "));// yyyymmddhhmmss
+		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(transSeqNum, 6, "0"));
+		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
+		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPINQ", 7, " "));
+		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
+		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
+		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
 		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 20, " "));
 		map.put("AMOUNT", StringUtils.leftPad(amount + "00", 16, "0"));
