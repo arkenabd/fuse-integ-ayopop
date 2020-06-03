@@ -32,16 +32,16 @@ public class GenerateRequestPayment {
 		String key = apiSecret;
 		String base64Secret = DatatypeConverter.printBase64Binary(key.getBytes());
 		// Payload
-		HashMap<String, Object> mapPayloadBuyerDetail = new HashMap<String, Object>();
-		mapPayloadBuyerDetail.put("buyerEmail", "test@gmail.com");
-		mapPayloadBuyerDetail.put("publicBuyerId", "1122457HG23");
-		String[] callbackArr = { "https://webhook.site/e67fb7a9-f4ae-40a3-a7df-2fb42e48002e" };
+//		HashMap<String, Object> mapPayloadBuyerDetail = new HashMap<String, Object>();
+//		mapPayloadBuyerDetail.put("buyerEmail", "test@gmail.com");
+//		mapPayloadBuyerDetail.put("publicBuyerId", "1122457HG23");
+		String[] callbackArr = {
+				"http://integ-ayopop-apim.apps.ocp-dev.hanabank.co.id/hanabank/integ/ayopop/callback" };
 
 		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
 				.claim("inquiryId", Long.parseLong(inquiryId.trim())).claim("accountNumber", accountNumber)
 				.claim("productCode", productCode).claim("amount", Long.parseLong(amount.trim()))
-				.claim("refNumber", refNumber).claim("partnerId", partnerId)
-				.claim("buyerDetails", mapPayloadBuyerDetail).claim("CallbackUrls", callbackArr)
+				.claim("refNumber", refNumber).claim("partnerId", partnerId).claim("CallbackUrls", callbackArr)
 				.signWith(SignatureAlgorithm.HS256, base64Secret);
 
 		token = builder.compact();

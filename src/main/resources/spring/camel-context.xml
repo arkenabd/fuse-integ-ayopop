@@ -175,7 +175,7 @@
                     <simple/>
                 </setBody>
                 <to id="_to1_pay" uri="https4://dev.openapi.ayopop.id/api/v1/bill/payment?bridgeEndpoint=true&amp;connectionClose=true&amp;throwExceptionOnFailure=false"/>
-                <log id="_log3_pay" message="Response Ayopop Inquiry : ${body}"/>
+                <log id="_log3_pay" message="Response Ayopop Payment : ${body}"/>
                 <bean id="_bean3_pay"
                     method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
                 <convertBodyTo id="_convertBodyTo1_pay" type="java.lang.String"/>
@@ -214,6 +214,81 @@
                         <simple>0043RAPI${body.substring(8,41)}05</simple>
                     </setBody>
                     <log id="_log7_pay" message="Fixed Length Message Final (ERROR) : ${body}"/>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="_callback">
+            <from id="_from4_cbk" uri="direct:callback"/>
+            <process id="_Init_Strategy_cbk" ref="killRoute"/>
+            <doTry id="_doTry1_cbk">
+                <log id="_Input_cbk" message="Input Message : ${body}"/>
+                <setProperty id="_setProperty3_cbk" propertyName="bodyBeforeCallGetSeqNum">
+                    <simple>${body}</simple>
+                </setProperty>
+                <to id="_to3_cbk" uri="direct:getseqnum"/>
+                <setProperty id="_setProperty2_cbk" propertyName="counter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <log id="_log6_cbk" message="GET Sequence number value : ${exchangeProperty[counter]}"/>
+                <log id="_log3_cbk" message="Response Ayopop Callback : ${body}"/>
+                <bean id="_bean3_cbk"
+                    method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
+                <convertBodyTo id="_convertBodyTo1_cbk" type="java.lang.String"/>
+                <unmarshal id="_input_to_pojo_cbk">
+                    <custom ref="ayopop_payment_dataformat"/>
+                </unmarshal>
+                <log id="_Check Parse_cbk" message="Check Parse Data responseCode : ${body.responseCode}"/>
+                <bean id="_bean2_cbk"
+                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'')" ref="preGenerateFLCallback"/>
+                <log id="_log4_cbk" message="List Map Value : ${body}"/>
+                <marshal id="_marshal2_cbk">
+                    <flatpack definition="InquiryFlconfigIn.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
+                </marshal>
+                <log id="_log2_cbk" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
+                <convertBodyTo id="_convertBodyTo2_cbk" type="java.lang.String"/>
+                <bean id="_bean4_cbk" method="concatenate(${body})" ref="addAdditionalFields"/>
+                <log id="_log5_cbk" message="Fixed Length Message Final : ${body}"/>
+                <to id="_to5" uri="direct:hlitcprouter"/>
+                <doCatch id="_doCatch1_cbk">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <setBody id="_setBody5_cbk">
+                        <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+                    </setBody>
+                    <log id="co_log9_cbk" message="Error Message : ${exception.message}, Body : ${body}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13x_cbk">
+                        <constant>500</constant>
+                    </setHeader>
+                    <convertBodyTo id="_convertBodyTo3_cbk" type="java.lang.String"/>
+                    <setBody id="co_setBody6_cbk">
+                        <simple>0043RAPI${body.substring(8,41)}05</simple>
+                    </setBody>
+                    <log id="_log7_cbk" message="Fixed Length Message Final (ERROR) : ${body}"/>
+                    <to id="_to6" uri="direct:hlitcprouter"/>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="_hli_tcp_router">
+            <from id="_from2" uri="direct:hlitcprouter"/>
+            <doTry id="_doTry2">
+                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
+                <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <doCatch id="_doCatch2">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <log id="log1_callRouter" message="${body}"/>
                 </doCatch>
             </doTry>
         </route>
@@ -347,12 +422,6 @@
             </setBody>
             <to id="_to2" uri="https4://dev.openapi.ayopop.id/api/v1/partner/products?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
         </route>
-        <route id="_callback">
-            <from id="_from4" uri="direct:callback"/>
-            <setBody id="_setBody1">
-                <simple>test</simple>
-            </setBody>
-        </route>
         <route id="_get_Seq_ayp">
             <from id="_from31_ayp" uri="direct:getseqnum"/>
             <log id="_Current_SeqNum_ayp" message="Sequence number from value ${properties:test} to value (${properties:test} + 1)"/>
@@ -384,6 +453,8 @@
         id="preGenerateFLInquiry" scope="singleton"/>
     <bean class="hana.integ.ayopop.PaymentPreGenerateFixedLength"
         id="preGenerateFLPayment" scope="singleton"/>
+    <bean class="hana.integ.ayopop.CallbackPreGenerateFixedLength"
+        id="preGenerateFLCallback" scope="singleton"/>
     <bean class="hana.integ.ayopop.StatusPreGenerateFixedLength"
         id="preGenerateFLStatus" scope="singleton"/>
     <bean class="hana.integ.ayopop.BalancePreGenerateFixedLength"
@@ -406,4 +477,6 @@
     <bean class="org.jboss.netty.handler.codec.string.StringDecoder" id="stringDecoder"/>
     <!-- String to ChannelBuffer/ByteBuf -->
     <bean class="org.jboss.netty.handler.codec.string.StringEncoder" id="stringEncoder"/>
+    <bean class="io.netty.handler.codec.string.StringDecoder" id="string-decoder"/>
+    <bean class="io.netty.handler.codec.string.StringEncoder" id="string-encoder"/>
 </beans>

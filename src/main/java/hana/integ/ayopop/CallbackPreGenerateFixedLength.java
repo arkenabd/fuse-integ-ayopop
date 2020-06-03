@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PaymentPreGenerateFixedLength {
+public class CallbackPreGenerateFixedLength {
 	public String randomNumeric(int n) {
 		return RandomStringUtils.randomNumeric(n);
 	}
@@ -30,7 +30,7 @@ public class PaymentPreGenerateFixedLength {
 		return RandomStringUtils.randomAlphanumeric(n);
 	}
 
-	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
+	public List<Map<String, String>> generate(String responseCode, String accountNumber,
 			String customerName, String productName, String productCode, String amount, String totalAdmin,
 			String validity, Exchange exchange) {
 		// Get counter
@@ -66,7 +66,7 @@ public class PaymentPreGenerateFixedLength {
 		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPYMN", 7, " "));
 
 		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
-		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
+		map.put("INQUIRY_ID", StringUtils.rightPad("", 10, " "));
 		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
 		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
