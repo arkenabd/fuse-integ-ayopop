@@ -202,13 +202,18 @@
                     <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-                    <log id="co_log9_pay" message="Error Message : ${exception.message}"/>
-                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13_pay">
+                    <setBody id="_setBody5_pay">
+                        <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+                    </setBody>
+                    <log id="co_log9_pay" message="Error Message : ${exception.message}, Body : ${body}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13x_pay">
                         <constant>500</constant>
                     </setHeader>
+                    <convertBodyTo id="_convertBodyTo3_pay" type="java.lang.String"/>
                     <setBody id="co_setBody6_pay">
-                        <simple/>
+                        <simple>0043RAPI${body.substring(8,41)}05</simple>
                     </setBody>
+                    <log id="_log7_pay" message="Fixed Length Message Final (ERROR) : ${body}"/>
                 </doCatch>
             </doTry>
         </route>
