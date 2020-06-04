@@ -19,7 +19,14 @@ public class GenerateRequestPayment {
 			String month, String billIds, Exchange exchange) throws Exception {
 		// TODO Auto-generated method stub
 		System.out.println("inquiryId: " + inquiryId);
-		System.out.println("amount: " + amount);
+		try {
+			System.out.println("month :" + month);
+			if (month.length() == 0) {
+				month = "-";
+			}
+		} catch (Exception e) {
+			month = "-";
+		}
 		PropertiesComponent pc = exchange.getContext().getComponent("properties", PropertiesComponent.class);
 		pc.setLocation("classpath:application.properties");
 		pc.setCache(false);
@@ -41,8 +48,13 @@ public class GenerateRequestPayment {
 		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
 				.claim("inquiryId", Long.parseLong(inquiryId.trim())).claim("accountNumber", accountNumber)
 				.claim("productCode", productCode).claim("amount", Long.parseLong(amount.trim()))
-				.claim("refNumber", refNumber).claim("partnerId", partnerId).claim("CallbackUrls", callbackArr)
-				.signWith(SignatureAlgorithm.HS256, base64Secret);
+				.claim("refNumber", refNumber);
+		if (month != ("-")) {
+			builder.claim("month", Long.parseLong(month));
+		}
+
+		builder.claim("partnerId", partnerId).claim("CallbackUrls", callbackArr).signWith(SignatureAlgorithm.HS256,
+				base64Secret);
 
 		token = builder.compact();
 

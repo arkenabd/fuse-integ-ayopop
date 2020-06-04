@@ -176,7 +176,7 @@
                     <simple>${body.get(0).get(INQUIRY_ID)}</simple>
                 </setProperty>
                 <bean id="_bean1_pay"
-                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)})" ref="requestPayment"/>
+                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)},${body.get(0).get(MONTH)},${body.get(0).get(BILL_IDS)})" ref="requestPayment"/>
                 <setBody id="_setBody3_pay">
                     <simple/>
                 </setBody>

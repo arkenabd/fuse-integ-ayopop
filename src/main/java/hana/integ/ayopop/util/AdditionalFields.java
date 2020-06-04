@@ -10,7 +10,8 @@ public class AdditionalFields {
 	public void generateAdditionalField(String jsonString, Exchange exchange) {
 		System.out.println("=====[Start] Generate Additional Fields=====");
 		String additionalField = "{"
-				+ jsonString.substring(jsonString.indexOf("customerDetail")-1, jsonString.length() - 1);
+				+ jsonString.substring(jsonString.indexOf("message") - 1, jsonString.indexOf("},") + 2)
+				+ jsonString.substring(jsonString.indexOf("customerDetail") - 1, jsonString.length() - 1);
 		System.out.println(additionalField.replaceAll("[\r\n ]", ""));
 		exchange.setProperty("additionalFields", additionalField);
 		System.out.println("additionalFields :" + exchange.getProperty("additionalFields"));
