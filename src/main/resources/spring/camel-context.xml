@@ -166,6 +166,12 @@
                         fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
                 <log id="_log1_pay" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
+                <setProperty id="_setProperty4" propertyName="transId">
+                    <simple>${body.get(0).get(TRANSACTION_ID)}</simple>
+                </setProperty>
+                <setProperty id="_setProperty5" propertyName="transSeqNum">
+                    <simple>${body.get(0).get(TRANSACTION_ID_SEQNUM)}</simple>
+                </setProperty>
                 <setProperty id="_inquiryId" propertyName="inquiryId">
                     <simple>${body.get(0).get(INQUIRY_ID)}</simple>
                 </setProperty>
@@ -184,7 +190,7 @@
                 </unmarshal>
                 <log id="_Check Parse_pay" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2_pay"
-                    method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${body.message.eN})" ref="preGenerateFLPayment"/>
+                    method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[transId]},${exchangeProperty[transSeqNum]},${body.message.eN})" ref="preGenerateFLPayment"/>
                 <log id="_log4_pay" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2_pay">
                     <flatpack definition="InquiryFlconfigIn.xml"

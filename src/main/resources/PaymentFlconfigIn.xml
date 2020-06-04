@@ -12,10 +12,10 @@
 	<COLUMN name="PROCESS_CODE" length="7" />
 	<COLUMN name="RESP_CODE" length="2" />
 	<COLUMN name="INQUIRY_ID" length="10" />
-	<COLUMN name="ACCOUNT_NUMBER" length="15" />
+	<COLUMN name="ACCOUNT_NUMBER" length="20" />
 	<COLUMN name="CUSTOMER_NAME" length="30" />
 	<COLUMN name="PRODUCT_NAME" length="30" />
-	<COLUMN name="PRODUCT_CODE" length="8" />
+	<COLUMN name="PRODUCT_CODE" length="20" />
 	<COLUMN name="AMOUNT" length="16" />
 	<COLUMN name="TOTAL_ADMIN" length="12" />
 	<COLUMN name="VALIDITY" length="8" />
