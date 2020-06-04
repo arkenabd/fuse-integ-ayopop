@@ -34,7 +34,8 @@ public class GenerateRequestPayment {
 		String partnerId = "mGKm25W0454v";
 		String apiSecret = "0eN7R4uR1pxJvwJV7rAkfpQ5TTKCkanfhwN";
 		String token = "";
-
+		// remove decimal
+		amount = amount.substring(0, amount.length() - 2);
 		// Generate Token
 		String key = apiSecret;
 		String base64Secret = DatatypeConverter.printBase64Binary(key.getBytes());
