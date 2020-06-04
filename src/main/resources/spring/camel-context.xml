@@ -184,7 +184,7 @@
                 </unmarshal>
                 <log id="_Check Parse_pay" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2_pay"
-                    method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'')" ref="preGenerateFLPayment"/>
+                    method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${body.message.eN})" ref="preGenerateFLPayment"/>
                 <log id="_log4_pay" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2_pay">
                     <flatpack definition="InquiryFlconfigIn.xml"
@@ -239,7 +239,7 @@
                 </unmarshal>
                 <log id="_Check Parse_cbk" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2_cbk"
-                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'')" ref="preGenerateFLCallback"/>
+                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${body.message.eN})" ref="preGenerateFLCallback"/>
                 <log id="_log4_cbk" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2_cbk">
                     <flatpack definition="InquiryFlconfigIn.xml"

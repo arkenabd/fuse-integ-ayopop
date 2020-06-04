@@ -30,9 +30,9 @@ public class CallbackPreGenerateFixedLength {
 		return RandomStringUtils.randomAlphanumeric(n);
 	}
 
-	public List<Map<String, String>> generate(String responseCode, String accountNumber,
+	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
 			String customerName, String productName, String productCode, String amount, String totalAdmin,
-			String validity, Exchange exchange) {
+			String validity, String messageEn, Exchange exchange) {
 		// Get counter
 		String existingCounter = exchange.getProperty("counter").toString();
 		// Get length additional field
@@ -54,7 +54,33 @@ public class CallbackPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
-
+		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
+			int length = messageEn.length();
+			if (length <= 46) {
+				messageEn = messageEn.substring(15);
+			} else {
+				messageEn = messageEn.substring(15, 46);
+			}
+			map.put("CUSTOMER_NAME", StringUtils.rightPad(messageEn, 30, " "));
+		} else {
+			map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
+		} // jika code 05 atau 68 disii dengan
+			// reason :EN
+		if (productName.length() > 30) {
+			productName = productName.substring(0, 30);
+		}
+		if (productCode.length() > 20) {
+			productCode = productCode.substring(0, 20);
+		}
+		if (amount.length() > 16) {
+			amount = amount.substring(0, 16);
+		}
+		if (totalAdmin.length() > 12) {
+			totalAdmin = totalAdmin.substring(0, 12);
+		}
+		if (validity.length() > 8) {
+			validity = validity.substring(0, 16);
+		}
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -66,7 +92,7 @@ public class CallbackPreGenerateFixedLength {
 		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPYMN", 7, " "));
 
 		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
-		map.put("INQUIRY_ID", StringUtils.rightPad("", 10, " "));
+		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
 		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
 		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
