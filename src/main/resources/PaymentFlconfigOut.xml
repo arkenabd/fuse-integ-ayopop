@@ -14,7 +14,7 @@
 	<COLUMN name="PRODUCT_CODE" length="20" />
 	<COLUMN name="INQUIRY_ID" length="10" />
 	<COLUMN name="AMOUNT" length="16" />
-	<COLUMN name="REF_NUMBER" length="20" />
+	<COLUMN name="REF_NUMBER" length="50" />
 	<COLUMN name="MONTH" length="2" />
 	<COLUMN name="BILL_IDS" length="20" />
 </PZMAP> 

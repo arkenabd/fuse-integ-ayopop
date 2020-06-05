@@ -30,11 +30,16 @@ public class CallbackPreGenerateFixedLength {
 		return RandomStringUtils.randomAlphanumeric(n);
 	}
 
-	public List<Map<String, String>> generate(String responseCode, String inquiryId, String accountNumber,
-			String customerName, String productName, String productCode, String amount, String totalAdmin,
-			String validity, String messageEn, Exchange exchange) {
+	public List<Map<String, String>> generate(String responseCode, String accountNumber, String customerName,
+			String productName, String productCode, String amount, String totalAdmin, String validity, String messageEn,
+			String refNumInqidTid, Exchange exchange) {
 		// Get counter
-		String existingCounter = exchange.getProperty("counter").toString();
+		System.out.println("refNumInqidTid :"+refNumInqidTid);
+		refNumInqidTid = StringUtils.rightPad(refNumInqidTid, 50, " ");
+		String inquiryId = refNumInqidTid.substring(20, 30);
+		String Tid = refNumInqidTid.substring(30, 44);
+		String TidSeq = refNumInqidTid.substring(45, 50);
+//		String existingCounter = exchange.getProperty("counter").toString();
 		// Get length additional field
 		int addFLength = exchange.getProperty("additionalFields").toString().length();
 		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->
@@ -54,7 +59,7 @@ public class CallbackPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
-		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
+		if (respCodeSubmit.equals("05")) {
 			int length = messageEn.length();
 			if (length <= 46) {
 				messageEn = messageEn.substring(15);
@@ -86,8 +91,8 @@ public class CallbackPreGenerateFixedLength {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String date = simpleDateFormat.format(new Date());
 		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI kalao outgoing HOBI
-		map.put("TRANSACTION_ID", StringUtils.rightPad(date, 14, " "));// yyyymmddhhmmss
-		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(existingCounter, 6, "0"));
+		map.put("TRANSACTION_ID", StringUtils.rightPad(Tid, 14, " "));// yyyymmddhhmmss
+		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(TidSeq, 6, "0"));
 		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
 		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPYMN", 7, " "));
 

@@ -40,6 +40,7 @@ public class InquiryPreGenerateFixedLength {
 		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->
 		// 05), (301 - 399 -> 05), (200 - 299 -> 68)
 		int respCode = Integer.parseInt(responseCode);
+
 		String respCodeSubmit = "";
 		if ((respCode >= 0 && respCode <= 99) || respCode == 300) {
 			respCodeSubmit = "00";
@@ -50,12 +51,12 @@ public class InquiryPreGenerateFixedLength {
 		if (respCode >= 200 && respCode <= 299) {
 			respCodeSubmit = "68";
 		}
-
+		exchange.setProperty("respCode", respCodeSubmit);
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
 		// Substring all field based on FL config
-		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
+		if (respCodeSubmit.equals("05")) {
 			int length = messageEn.length();
 			if (length <= 46) {
 				messageEn = messageEn.substring(15);

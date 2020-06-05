@@ -50,11 +50,11 @@ public class PaymentPreGenerateFixedLength {
 		if (respCode >= 200 && respCode <= 299) {
 			respCodeSubmit = "68";
 		}
-
+		exchange.setProperty("respCode", respCodeSubmit);
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
-		if (respCodeSubmit.equals("05") || respCodeSubmit.equals("68")) {
+		if (respCodeSubmit.equals("05")) {
 			int length = messageEn.length();
 			if (length <= 46) {
 				messageEn = messageEn.substring(15);

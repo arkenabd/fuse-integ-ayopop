@@ -181,26 +181,71 @@
                     <simple/>
                 </setBody>
                 <to id="_to1_pay" uri="https4://dev.openapi.ayopop.id/api/v1/bill/payment?bridgeEndpoint=true&amp;connectionClose=true&amp;throwExceptionOnFailure=false"/>
+                <setProperty id="_setProperty6" propertyName="keepBodyRespAyp">
+                    <simple>${body}</simple>
+                </setProperty>
                 <log id="_log3_pay" message="Response Ayopop Payment : ${body}"/>
-                <bean id="_bean3_pay"
-                    method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
                 <convertBodyTo id="_convertBodyTo1_pay" type="java.lang.String"/>
                 <unmarshal id="_input_to_pojo_pay">
                     <custom ref="ayopop_payment_dataformat"/>
                 </unmarshal>
                 <log id="_Check Parse_pay" message="Check Parse Data responseCode : ${body.responseCode}"/>
-                <bean id="_bean2_pay"
-                    method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[transId]},${exchangeProperty[transSeqNum]},${body.message.eN})" ref="preGenerateFLPayment"/>
-                <log id="_log4_pay" message="List Map Value : ${body}"/>
-                <marshal id="_marshal2_pay">
-                    <flatpack definition="InquiryFlconfigIn.xml"
-                        fixed="true" ignoreFirstRecord="false"/>
-                </marshal>
-                <log id="_log2_pay" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
-                <convertBodyTo id="_convertBodyTo2_pay" type="java.lang.String"/>
-                <bean id="_bean4_pay" method="concatenate(${body})" ref="addAdditionalFields"/>
-                <log id="_log5_pay" message="Fixed Length Message Final : ${body}"/>
+                <choice id="_choice1">
+                    <when id="_when1">
+                        <!-- <simple>${body.responseCode} range '200..299'</simple> -->
+                        <simple>${body.responseCode} == 183</simple>
+                        <log id="_log8" message="=====response code ${body.responseCode} (Transaction is processing)====="/>
+                        <setProperty id="_setProperty7" propertyName="fileRespPay">
+                            <simple>file://ayopop/payment?fileName=${body.data.refNumber}.txt&amp;noop=true</simple>
+                        </setProperty>
+                        <log id="_log10" message="Read File From : ${exchangeProperty[fileRespPay]}"/>
+                        <process id="_process1" ref="pullMesCallback"/>
+                        <bean id="_bean3_pay_inproc"
+                            method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
+                        <convertBodyTo id="_convertBodyTo4_inproc" type="java.lang.String"/>
+                        <unmarshal id="_errorPay_inproc">
+                            <custom ref="ayopop_payment_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_pay_inproc"
+                            method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[transId]},${exchangeProperty[transSeqNum]},${body.message.eN})" ref="preGenerateFLPayment"/>
+                        <log id="_log4_pay_inproc" message="List Map Value : ${body}"/>
+                        <marshal id="_marshal2_pay_inproc">
+                            <flatpack definition="InquiryFlconfigIn.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </marshal>
+                        <log id="_log2_pay_inproc" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
+                        <convertBodyTo id="_convertBodyTo2_pay_inproc" type="java.lang.String"/>
+                        <bean id="_bean4_pay_inproc"
+                            method="concatenate(${body})" ref="addAdditionalFields"/>
+                        <log id="_log5_pay_inproc" message="Fixed Length Message Final : ${body}"/>
+                    </when>
+                    <otherwise id="_otherwise1">
+                        <log id="_log9" message="=====response code ${body.responseCode} (Failed)====="/>
+                        <setBody id="_setBody1">
+                            <simple>${exchangeProperty[keepBodyRespAyp]}</simple>
+                        </setBody>
+                        <bean id="_bean3_pay"
+                            method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
+                        <convertBodyTo id="_convertBodyTo4" type="java.lang.String"/>
+                        <unmarshal id="_errorPay">
+                            <custom ref="ayopop_payment_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_pay"
+                            method="generate(${body.responseCode},${exchangeProperty[inquiryId]},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[transId]},${exchangeProperty[transSeqNum]},${body.message.eN})" ref="preGenerateFLPayment"/>
+                        <log id="_log4_pay" message="List Map Value : ${body}"/>
+                        <marshal id="_marshal2_pay">
+                            <flatpack definition="InquiryFlconfigIn.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </marshal>
+                        <log id="_log2_pay" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
+                        <convertBodyTo id="_convertBodyTo2_pay" type="java.lang.String"/>
+                        <bean id="_bean4_pay"
+                            method="concatenate(${body})" ref="addAdditionalFields"/>
+                        <log id="_log5_pay" message="Fixed Length Message Final : ${body}"/>
+                    </otherwise>
+                </choice>
                 <doCatch id="_doCatch1_pay">
+                    <exception>java.lang.NullPointerException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
                     <exception>org.apache.camel.ExpressionEvaluationException</exception>
@@ -231,12 +276,6 @@
                 <setProperty id="_setProperty3_cbk" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="_to3_cbk" uri="direct:getseqnum"/>
-                <setProperty id="_setProperty2_cbk" propertyName="counter">
-                    <simple>${body}</simple>
-                </setProperty>
-                <log id="_log6_cbk" message="GET Sequence number value : ${exchangeProperty[counter]}"/>
-                <log id="_log3_cbk" message="Response Ayopop Callback : ${body}"/>
                 <bean id="_bean3_cbk"
                     method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
                 <convertBodyTo id="_convertBodyTo1_cbk" type="java.lang.String"/>
@@ -244,19 +283,18 @@
                     <custom ref="ayopop_payment_dataformat"/>
                 </unmarshal>
                 <log id="_Check Parse_cbk" message="Check Parse Data responseCode : ${body.responseCode}"/>
-                <bean id="_bean2_cbk"
-                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${body.message.eN})" ref="preGenerateFLCallback"/>
-                <log id="_log4_cbk" message="List Map Value : ${body}"/>
-                <marshal id="_marshal2_cbk">
-                    <flatpack definition="InquiryFlconfigIn.xml"
-                        fixed="true" ignoreFirstRecord="false"/>
-                </marshal>
-                <log id="_log2_cbk" message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}"/>
-                <convertBodyTo id="_convertBodyTo2_cbk" type="java.lang.String"/>
-                <bean id="_bean4_cbk" method="concatenate(${body})" ref="addAdditionalFields"/>
-                <log id="_log5_cbk" message="Fixed Length Message Final : ${body}"/>
-                <to id="_to5" uri="direct:hlitcprouter"/>
+                <setProperty id="_setProperty8" propertyName="fileName">
+                    <simple>${body.data.refNumber}.txt</simple>
+                </setProperty>
+                <setBody id="_setBody6">
+                    <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+                </setBody>
+                <to id="_to7" uri="file://ayopop/payment?fileName=${exchangeProperty[fileName]}&amp;noop=true"/>
+                <setBody id="_setBody8">
+                    <simple/>
+                </setBody>
                 <doCatch id="_doCatch1_cbk">
+                    <exception>java.lang.NullPointerException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
                     <exception>org.apache.camel.ExpressionEvaluationException</exception>
@@ -264,27 +302,18 @@
                     <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-                    <setBody id="_setBody5_cbk">
-                        <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+                    <log id="_log11" message="Error : "/>
+                    <setBody id="_setBody7">
+                        <simple/>
                     </setBody>
-                    <log id="co_log9_cbk" message="Error Message : ${exception.message}, Body : ${body}"/>
-                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13x_cbk">
-                        <constant>500</constant>
-                    </setHeader>
-                    <convertBodyTo id="_convertBodyTo3_cbk" type="java.lang.String"/>
-                    <setBody id="co_setBody6_cbk">
-                        <simple>0043RAPI${body.substring(8,41)}05</simple>
-                    </setBody>
-                    <log id="_log7_cbk" message="Fixed Length Message Final (ERROR) : ${body}"/>
-                    <to id="_to6" uri="direct:hlitcprouter"/>
                 </doCatch>
             </doTry>
         </route>
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter"/>
             <doTry id="_doTry2">
-                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
-                <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
@@ -476,6 +505,8 @@
         id="requestStatus" scope="singleton"/>
     <bean class="hana.integ.ayopop.util.AdditionalFields"
         id="addAdditionalFields" scope="singleton"/>
+    <bean class="hana.integ.ayopop.PullMessageCallback"
+        id="pullMesCallback" scope="singleton"/>
     <bean class="hana.integ.ayopop.GenerateCounter" id="generateCounter" scope="singleton"/>
     <bean class="hana.integ.ayopop.RefreshCounter" id="refreshCounter" scope="singleton"/>
     <bean class="hana.integ.ayopop.KillRoute" id="killRoute" scope="singleton"/>
