@@ -165,9 +165,12 @@
                     <flatpack definition="StatusFlconfigOut.xml"
                         fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
+                <setProperty id="_setProperty9" propertyName="refNum">
+                    <simple>${body.get(0).get(REF_NUMBER)}</simple>
+                </setProperty>
                 <log id="_log1_sta" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
                 <bean id="_bean1_sta"
-                    method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)})" ref="requestStatus"/>
+                    method="process(${body.get(0).get(REF_NUMBER)})" ref="requestStatus"/>
                 <setBody id="_setBody3_sta">
                     <simple/>
                 </setBody>
@@ -181,7 +184,7 @@
                 </unmarshal>
                 <log id="_Check Parse_sta" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2_sta"
-                    method="generate(${body.responseCode},'',${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${body.data.refNumber},${body.message.eN})" ref="preGenerateFLStatus"/>
+                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[refNum]},${body.message.eN})" ref="preGenerateFLStatus"/>
                 <log id="_log4_sta" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2_sta">
                     <flatpack definition="InquiryFlconfigIn.xml"

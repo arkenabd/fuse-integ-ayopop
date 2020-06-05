@@ -31,15 +31,14 @@ public class StatusPreGenerateFixedLength {
 	}
 
 	public List<Map<String, String>> generate(String responseCode, String accountNumber, String customerName,
-			String productName, String productCode, String amount, String totalAdmin, String validity, String messageEn,
-			String refNumInqidTid, Exchange exchange) {
+			String productName, String productCode, String amount, String totalAdmin, String validity,
+			String refNumInqidTid, String messageEn, Exchange exchange) {
 		// Get counter
 		System.out.println("refNumInqidTid :" + refNumInqidTid);
 		refNumInqidTid = StringUtils.rightPad(refNumInqidTid, 50, " ");
 		String inquiryId = refNumInqidTid.substring(20, 30);
 		String Tid = refNumInqidTid.substring(30, 44);
 		String TidSeq = refNumInqidTid.substring(45, 50);
-//		String existingCounter = exchange.getProperty("counter").toString();
 		// Get length additional field
 		int addFLength = exchange.getProperty("additionalFields").toString().length();
 		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->
@@ -55,16 +54,16 @@ public class StatusPreGenerateFixedLength {
 		if (respCode >= 200 && respCode <= 299) {
 			respCodeSubmit = "68";
 		}
-
+		exchange.setProperty("respCode", respCodeSubmit);
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("=====[Start] Generate fixed length response message to Hobis=====");
 		Map<String, String> map = new HashMap<>();
 		if (respCodeSubmit.equals("05")) {
 			int length = messageEn.length();
-			if (length <= 46) {
+			if (length <= 45) {
 				messageEn = messageEn.substring(15);
 			} else {
-				messageEn = messageEn.substring(15, 46);
+				messageEn = messageEn.substring(15, 45);
 			}
 			map.put("CUSTOMER_NAME", StringUtils.rightPad(messageEn, 30, " "));
 		} else {
@@ -94,16 +93,15 @@ public class StatusPreGenerateFixedLength {
 		map.put("TRANSACTION_ID", StringUtils.rightPad(Tid, 14, " "));// yyyymmddhhmmss
 		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(TidSeq, 6, "0"));
 		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
-		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPYMN", 7, " "));
+		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPSTS", 7, " "));
 
 		map.put("RESP_CODE", StringUtils.rightPad(respCodeSubmit, 2, " "));
 		map.put("INQUIRY_ID", StringUtils.rightPad(inquiryId, 10, " "));
 		map.put("ACCOUNT_NUMBER", StringUtils.rightPad(accountNumber, 20, " "));
-		map.put("CUSTOMER_NAME", StringUtils.rightPad(customerName, 30, " "));
 		map.put("PRODUCT_NAME", StringUtils.rightPad(productName, 30, " "));
 		map.put("PRODUCT_CODE", StringUtils.rightPad(productCode, 20, " "));
-		map.put("AMOUNT", StringUtils.leftPad(amount, 16, "0"));
-		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin, 12, "0"));
+		map.put("AMOUNT", StringUtils.leftPad(amount + "00", 16, "0"));
+		map.put("TOTAL_ADMIN", StringUtils.leftPad(totalAdmin + "00", 12, "0"));
 		map.put("VALIDITY", StringUtils.rightPad(validity, 8, " "));
 
 		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()

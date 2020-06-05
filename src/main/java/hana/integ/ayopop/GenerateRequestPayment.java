@@ -27,10 +27,6 @@ public class GenerateRequestPayment {
 		} catch (Exception e) {
 			month = "-";
 		}
-		PropertiesComponent pc = exchange.getContext().getComponent("properties", PropertiesComponent.class);
-		pc.setLocation("classpath:application.properties");
-		pc.setCache(false);
-		java.util.Properties properties = new java.util.Properties();
 		String partnerId = "mGKm25W0454v";
 		String apiSecret = "0eN7R4uR1pxJvwJV7rAkfpQ5TTKCkanfhwN";
 		String token = "";
@@ -60,7 +56,10 @@ public class GenerateRequestPayment {
 		token = builder.compact();
 
 		// Set Header
-		exchange.getIn().getHeaders().clear();
+		try {
+			exchange.getIn().getHeaders().clear();
+		} catch (Exception e) {
+		}
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/json");
 		exchange.getIn().setHeader("KEY", partnerId);
 		exchange.getIn().setHeader("TOKEN", token);
