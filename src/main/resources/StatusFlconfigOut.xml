@@ -10,5 +10,5 @@
 	<COLUMN name="TRANSACTION_ID_SEQNUM" length="6" />
 	<COLUMN name="CLIENT_ID_COMMON" length="6" />
 	<COLUMN name="PROCESS_CODE" length="7" />
-	<COLUMN name="REF_NUMBER" length="20" />
+	<COLUMN name="REF_NUMBER" length="50" />
 </PZMAP> 

@@ -29,14 +29,6 @@ public class StatusDataPostpaid {
 	private String category;
 	@JsonProperty("token")
 	private String token;
-	@JsonProperty("customerDetails")
-	private List<StatusCustomerDetailPostpaid> customerDetails = null;
-	@JsonProperty("billDetails")
-	private List<StatusBillDetailPostpaid> billDetails = null;
-	@JsonProperty("productDetails")
-	private List<StatusProductDetailPostpaid> productDetails = null;
-	@JsonProperty("extraFields")
-	private List<Object> extraFields = null;
 
 	@JsonProperty("refNumber")
 	public String getRefNumber() {
@@ -126,46 +118,6 @@ public class StatusDataPostpaid {
 	@JsonProperty("token")
 	public void setToken(String token) {
 		this.token = token;
-	}
-
-	@JsonProperty("customerDetails")
-	public List<StatusCustomerDetailPostpaid> getCustomerDetails() {
-		return customerDetails;
-	}
-
-	@JsonProperty("customerDetails")
-	public void setCustomerDetails(List<StatusCustomerDetailPostpaid> customerDetails) {
-		this.customerDetails = customerDetails;
-	}
-
-	@JsonProperty("billDetails")
-	public List<StatusBillDetailPostpaid> getBillDetails() {
-		return billDetails;
-	}
-
-	@JsonProperty("billDetails")
-	public void setBillDetails(List<StatusBillDetailPostpaid> billDetails) {
-		this.billDetails = billDetails;
-	}
-
-	@JsonProperty("productDetails")
-	public List<StatusProductDetailPostpaid> getProductDetails() {
-		return productDetails;
-	}
-
-	@JsonProperty("productDetails")
-	public void setProductDetails(List<StatusProductDetailPostpaid> productDetails) {
-		this.productDetails = productDetails;
-	}
-
-	@JsonProperty("extraFields")
-	public List<Object> getExtraFields() {
-		return extraFields;
-	}
-
-	@JsonProperty("extraFields")
-	public void setExtraFields(List<Object> extraFields) {
-		this.extraFields = extraFields;
 	}
 
 }
