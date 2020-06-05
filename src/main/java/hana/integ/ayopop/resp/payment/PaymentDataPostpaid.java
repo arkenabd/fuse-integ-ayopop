@@ -29,14 +29,6 @@ public class PaymentDataPostpaid {
 	private String category;
 	@JsonProperty("token")
 	private String token;
-	@JsonProperty("customerDetails")
-	private List<Object> customerDetails = null;
-	@JsonProperty("billDetails")
-	private List<Object> billDetails = null;
-	@JsonProperty("productDetails")
-	private List<Object> productDetails = null;
-	@JsonProperty("extraFields")
-	private List<Object> extraFields = null;
 
 	@JsonProperty("refNumber")
 	public String getRefNumber() {
@@ -126,46 +118,6 @@ public class PaymentDataPostpaid {
 	@JsonProperty("token")
 	public void setToken(String token) {
 		this.token = token;
-	}
-
-	@JsonProperty("customerDetails")
-	public List<Object> getCustomerDetails() {
-		return customerDetails;
-	}
-
-	@JsonProperty("customerDetails")
-	public void setCustomerDetails(List<Object> customerDetails) {
-		this.customerDetails = customerDetails;
-	}
-
-	@JsonProperty("billDetails")
-	public List<Object> getBillDetails() {
-		return billDetails;
-	}
-
-	@JsonProperty("billDetails")
-	public void setBillDetails(List<Object> billDetails) {
-		this.billDetails = billDetails;
-	}
-
-	@JsonProperty("productDetails")
-	public List<Object> getProductDetails() {
-		return productDetails;
-	}
-
-	@JsonProperty("productDetails")
-	public void setProductDetails(List<Object> productDetails) {
-		this.productDetails = productDetails;
-	}
-
-	@JsonProperty("extraFields")
-	public List<Object> getExtraFields() {
-		return extraFields;
-	}
-
-	@JsonProperty("extraFields")
-	public void setExtraFields(List<Object> extraFields) {
-		this.extraFields = extraFields;
 	}
 
 }
