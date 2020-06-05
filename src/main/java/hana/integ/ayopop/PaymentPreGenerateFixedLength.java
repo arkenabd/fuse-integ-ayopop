@@ -56,10 +56,10 @@ public class PaymentPreGenerateFixedLength {
 		Map<String, String> map = new HashMap<>();
 		if (respCodeSubmit.equals("05")) {
 			int length = messageEn.length();
-			if (length <= 46) {
+			if (length <= 45) {
 				messageEn = messageEn.substring(15);
 			} else {
-				messageEn = messageEn.substring(15, 46);
+				messageEn = messageEn.substring(15, 45);
 			}
 			map.put("CUSTOMER_NAME", StringUtils.rightPad(messageEn, 30, " "));
 		} else {

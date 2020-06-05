@@ -167,6 +167,86 @@
 				</doCatch>
 			</doTry>
 		</route>
+		<route id="_status">
+			<!-- <from id="_to3_pay" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
+			<from id="_to4_sta" uri="direct:status" />
+			<process id="_Init_Strategy_sta" ref="killRoute" />
+			<doTry id="_doTry1_sta">
+				<log id="_Input_sta" message="Input Message : ${body}" />
+				<setProperty id="_setProperty3_sta"
+					propertyName="bodyBeforeCallGetSeqNum">
+					<simple>${body}</simple>
+				</setProperty>
+				<to id="_to3_sta" uri="direct:getseqnum" />
+				<setProperty id="_setProperty2_sta"
+					propertyName="counter">
+					<simple>${body}</simple>
+				</setProperty>
+				<log id="_log6_sta"
+					message="GET Sequence number value : ${exchangeProperty[counter]}" />
+				<setBody id="_setBody4_sta">
+					<simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
+				</setBody>
+				<unmarshal id="_FL_sta">
+					<flatpack definition="StatusFlconfigOut.xml" fixed="true"
+						ignoreFirstRecord="false" />
+				</unmarshal>
+				<log id="_log1_sta"
+					message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}" />
+				<bean id="_bean1_sta"
+					method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)})"
+					ref="requestStatus" />
+				<setBody id="_setBody3_sta">
+					<simple />
+				</setBody>
+				<to id="_to1_sta"
+					uri="https4://dev.openapi.ayopop.id/api/v1/bill/status?bridgeEndpoint=true&amp;connectionClose=true&amp;throwExceptionOnFailure=false" />
+				<log id="_log3_sta" message="Response Ayopop Inquiry : ${body}" />
+				<bean id="_bean3_sta" method="generateAdditionalField(${body})"
+					ref="addAdditionalFields" />
+				<convertBodyTo id="_convertBodyTo1_sta"
+					type="java.lang.String" />
+				<unmarshal id="_input_to_pojo_sta">
+					<custom ref="ayopop_status_dataformat" />
+				</unmarshal>
+				<log id="_Check Parse_sta"
+					message="Check Parse Data responseCode : ${body.responseCode}" />
+				<bean id="_bean2_sta"
+					method="generate(${body.responseCode},'',${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'')"
+					ref="preGenerateFLStatus" />
+				<log id="_log4_sta" message="List Map Value : ${body}" />
+				<marshal id="_marshal2_sta">
+					<flatpack definition="InquiryFlconfigIn.xml" fixed="true"
+						ignoreFirstRecord="false" />
+				</marshal>
+				<log id="_log2_sta"
+					message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}" />
+				<convertBodyTo id="_convertBodyTo2_sta"
+					type="java.lang.String" />
+				<bean id="_bean4_sta" method="concatenate(${body})"
+					ref="addAdditionalFields" />
+				<log id="_log5_sta"
+					message="Fixed Length Message Final : ${body}" />
+				<doCatch id="_doCatch1_sta">
+					<exception>java.lang.IllegalArgumentException</exception>
+					<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+					<exception>org.apache.camel.ExpressionEvaluationException</exception>
+					<exception>org.apache.camel.CamelExchangeException</exception>
+					<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+					<exception>org.apache.camel.InvalidPayloadException</exception>
+					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+					<log id="co_log9_sta"
+						message="Error Message : ${exception.message}" />
+					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
+						id="co_setHeader13_sta">
+						<constant>500</constant>
+					</setHeader>
+					<setBody id="co_setBody6_sta">
+						<simple />
+					</setBody>
+				</doCatch>
+			</doTry>
+		</route>
 		<route id="_payment">
 			<!-- <from id="_to3_pay" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
 			<from id="_to4_pay" uri="direct:payment" />
@@ -396,86 +476,7 @@
 			<bean id="_bean32" method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" 
 			ref="preGenerateFLStatus"/> <marshal id="_marshal32"> <flatpack definition="StatusFlconfigIn.xml" 
 			fixed="true"/> </marshal> </route> -->
-		<route id="_status">
-			<!-- <from id="_to3_pay" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
-			<from id="_to4_sta" uri="direct:status" />
-			<process id="_Init_Strategy_sta" ref="killRoute" />
-			<doTry id="_doTry1_sta">
-				<log id="_Input_sta" message="Input Message : ${body}" />
-				<setProperty id="_setProperty3_sta"
-					propertyName="bodyBeforeCallGetSeqNum">
-					<simple>${body}</simple>
-				</setProperty>
-				<to id="_to3_sta" uri="direct:getseqnum" />
-				<setProperty id="_setProperty2_sta"
-					propertyName="counter">
-					<simple>${body}</simple>
-				</setProperty>
-				<log id="_log6_sta"
-					message="GET Sequence number value : ${exchangeProperty[counter]}" />
-				<setBody id="_setBody4_sta">
-					<simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
-				</setBody>
-				<unmarshal id="_FL_sta">
-					<flatpack definition="StatusFlconfigOut.xml" fixed="true"
-						ignoreFirstRecord="false" />
-				</unmarshal>
-				<log id="_log1_sta"
-					message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}" />
-				<bean id="_bean1_sta"
-					method="process(${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)})"
-					ref="requestStatus" />
-				<setBody id="_setBody3_sta">
-					<simple />
-				</setBody>
-				<to id="_to1_sta"
-					uri="https4://dev.openapi.ayopop.id/api/v1/bill/status?bridgeEndpoint=true&amp;connectionClose=true&amp;throwExceptionOnFailure=false" />
-				<log id="_log3_sta" message="Response Ayopop Inquiry : ${body}" />
-				<bean id="_bean3_sta" method="generateAdditionalField(${body})"
-					ref="addAdditionalFields" />
-				<convertBodyTo id="_convertBodyTo1_sta"
-					type="java.lang.String" />
-				<unmarshal id="_input_to_pojo_sta">
-					<custom ref="ayopop_status_dataformat" />
-				</unmarshal>
-				<log id="_Check Parse_sta"
-					message="Check Parse Data responseCode : ${body.responseCode}" />
-				<bean id="_bean2_sta"
-					method="generate(${body.responseCode},'',${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'')"
-					ref="preGenerateFLStatus" />
-				<log id="_log4_sta" message="List Map Value : ${body}" />
-				<marshal id="_marshal2_sta">
-					<flatpack definition="InquiryFlconfigIn.xml" fixed="true"
-						ignoreFirstRecord="false" />
-				</marshal>
-				<log id="_log2_sta"
-					message="Fixed Length Message : ${body} + Additional Fields : ${exchangeProperty[additionalFields]}" />
-				<convertBodyTo id="_convertBodyTo2_sta"
-					type="java.lang.String" />
-				<bean id="_bean4_sta" method="concatenate(${body})"
-					ref="addAdditionalFields" />
-				<log id="_log5_sta"
-					message="Fixed Length Message Final : ${body}" />
-				<doCatch id="_doCatch1_sta">
-					<exception>java.lang.IllegalArgumentException</exception>
-					<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.apache.camel.ExpressionEvaluationException</exception>
-					<exception>org.apache.camel.CamelExchangeException</exception>
-					<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
-					<exception>org.apache.camel.InvalidPayloadException</exception>
-					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-					<log id="co_log9_sta"
-						message="Error Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="co_setHeader13_sta">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="co_setBody6_sta">
-						<simple />
-					</setBody>
-				</doCatch>
-			</doTry>
-		</route>
+
 		<route id="_balance">
 			<from id="_from5" uri="direct:balance" />
 			<log id="_Input4" message="Input Message : ${body}" />
