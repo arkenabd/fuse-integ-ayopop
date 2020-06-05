@@ -276,8 +276,6 @@
                 <setProperty id="_setProperty3_cbk" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <bean id="_bean3_cbk"
-                    method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
                 <convertBodyTo id="_convertBodyTo1_cbk" type="java.lang.String"/>
                 <unmarshal id="_input_to_pojo_cbk">
                     <custom ref="ayopop_payment_dataformat"/>
