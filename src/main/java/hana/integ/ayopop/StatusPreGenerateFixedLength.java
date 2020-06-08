@@ -32,13 +32,13 @@ public class StatusPreGenerateFixedLength {
 
 	public List<Map<String, String>> generate(String responseCode, String accountNumber, String customerName,
 			String productName, String productCode, String amount, String totalAdmin, String validity,
-			String refNumInqidTid, String messageEn, Exchange exchange) {
+			String transSeqNum, String transId, String refNumInqidTid, String messageEn, Exchange exchange) {
 		// Get counter
 		System.out.println("refNumInqidTid :" + refNumInqidTid);
 		refNumInqidTid = StringUtils.rightPad(refNumInqidTid, 50, " ");
 		String inquiryId = refNumInqidTid.substring(20, 30);
-		String Tid = refNumInqidTid.substring(30, 44);
-		String TidSeq = refNumInqidTid.substring(45, 50);
+		String TidSts = transId;
+		String TidSeqSts = transSeqNum;
 		// Get length additional field
 		int addFLength = exchange.getProperty("additionalFields").toString().length();
 		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->
@@ -90,8 +90,8 @@ public class StatusPreGenerateFixedLength {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String date = simpleDateFormat.format(new Date());
 		map.put("SWITCH_CODE", StringUtils.rightPad("RAPI", 4, " "));// incoming RAPI kalao outgoing HOBI
-		map.put("TRANSACTION_ID", StringUtils.rightPad(Tid, 14, " "));// yyyymmddhhmmss
-		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(TidSeq, 6, "0"));
+		map.put("TRANSACTION_ID", StringUtils.rightPad(TidSts, 14, " "));// yyyymmddhhmmss
+		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(TidSeqSts, 6, "0"));
 		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("AYOPOP", 6, " "));
 		map.put("PROCESS_CODE", StringUtils.rightPad("AYOPSTS", 7, " "));
 

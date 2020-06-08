@@ -165,8 +165,14 @@
                     <flatpack definition="StatusFlconfigOut.xml"
                         fixed="true" ignoreFirstRecord="false"/>
                 </unmarshal>
-                <setProperty id="_setProperty9" propertyName="refNum">
+                <setProperty id="_refNumSts" propertyName="refNum">
                     <simple>${body.get(0).get(REF_NUMBER)}</simple>
+                </setProperty>
+                <setProperty id="_transSeqNumSts" propertyName="transSeqNum">
+                    <simple>${body.get(0).get(TRANSACTION_ID_SEQNUM)}</simple>
+                </setProperty>
+                <setProperty id="_transIdSts" propertyName="transId">
+                    <simple>${body.get(0).get(TRANSACTION_ID)}</simple>
                 </setProperty>
                 <log id="_log1_sta" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
                 <bean id="_bean1_sta"
@@ -184,7 +190,7 @@
                 </unmarshal>
                 <log id="_Check Parse_sta" message="Check Parse Data responseCode : ${body.responseCode}"/>
                 <bean id="_bean2_sta"
-                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[refNum]},${body.message.eN})" ref="preGenerateFLStatus"/>
+                    method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${exchangeProperty[transSeqNum]},${exchangeProperty[transId]},${exchangeProperty[refNum]},${body.message.eN})" ref="preGenerateFLStatus"/>
                 <log id="_log4_sta" message="List Map Value : ${body}"/>
                 <marshal id="_marshal2_sta">
                     <flatpack definition="InquiryFlconfigIn.xml"
