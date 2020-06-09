@@ -270,10 +270,10 @@
                         <!-- <simple>${body.responseCode} == 183</simple> -->
                         <log id="_log8" message="=====response code ${body.responseCode} (Transaction is processing)====="/>
                         <setProperty id="_setProperty7" propertyName="fileRespPay">
-                            <simple>file://ayopop/payment?fileName=${body.data.refNumber}.txt&amp;noop=true</simple>
+                            <simple>ftp://192.168.88.231:21/ayopop/payment?fileName=${body.data.refNumber}.txt&amp;noop=true&amp;download=true&amp;username=fuse&amp;password=redhat</simple>
                         </setProperty>
                         <log id="_log10" message="Read File From : ${exchangeProperty[fileRespPay]}"/>
-                        <process id="_process1" ref="pullMesCallback"/>
+                        <process id="_GetJsonCallback" ref="pullMesCallback"/>
                         <bean id="_bean3_pay_inproc"
                             method="generateAdditionalField(${body})" ref="addAdditionalFields"/>
                         <convertBodyTo id="_convertBodyTo4_inproc" type="java.lang.String"/>
@@ -319,6 +319,7 @@
                     </otherwise>
                 </choice>
                 <doCatch id="_doCatch1_pay">
+                    <exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
                     <exception>java.lang.NullPointerException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
@@ -361,7 +362,7 @@
                 <setBody id="_setBody6">
                     <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
                 </setBody>
-                <to id="_to7" uri="file://ayopop/payment?fileName=${exchangeProperty[fileName]}&amp;noop=true"/>
+                <to id="_to5" uri="ftp://192.168.88.231:21/ayopop/payment?fileName=${exchangeProperty[fileName]}&amp;noop=true&amp;username=fuse&amp;password=redhat"/>
                 <setBody id="_setBody8">
                     <simple/>
                 </setBody>

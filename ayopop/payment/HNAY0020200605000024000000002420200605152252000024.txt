@@ -1,0 +1,64 @@
+{
+	"responseCode":1,
+	"success":true,
+	"message":{
+	"ID":"Your transaction was successful",
+	"EN":"Your transaction was successful"
+},
+	"data":{
+	"refNumber":"HNAY0020200605000024000000002420200605152252000024",
+	"transactionId":8859,
+	"accountNumber":"8888801470615100",
+	"amount":104500,
+	"totalAdmin":2500,
+	"productCode":"BPJSKES",
+	"productName":"BPJS Kesehatan",
+	"category":"BPJS",
+	"token":"BPJS20920200306084907",
+	"customerDetail":[
+		{
+			"key":"Nama Pelanggan",
+			"value":"Mudjaroh,suprihat"
+		},
+		{
+			"key":"Waktu & Tanggal Pembayaran",
+			"value":"10:34 | 09 Mar 2020"
+		},
+		{
+			"key":"Nomor Kontrak",
+			"value":"8888801470615100"
+		}
+],
+	"billDetails":[
+		{
+			"billId":"0",
+			"billInfo":[],
+			"key":"Jumlah Tagihan",
+			"value":"102000"
+		},
+		{
+			"billId":"0",
+			"billInfo":[],
+			"key":"Biaya Administrasi",
+			"value":"2500"
+		}
+],	"productDetails":[
+		{
+			"key":"No. VA Keluarga",
+			"value":"8888801470615100"
+		},
+		{
+			"key":"NO. VA Kepala Keluarga",
+			"value":"8888801260859779"
+		},
+		{	
+			"key":"Periode",
+			"value":"1 bulan"
+		},
+		{
+			"key":"No. VA Keluarga",
+			"value":"4 orang"
+		}
+],		
+		"extraFields":{"month":1}
+}}
