@@ -385,8 +385,8 @@
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
-                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
+                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
+                <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
                 <doCatch id="_doCatch2">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
