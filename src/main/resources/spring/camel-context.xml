@@ -141,6 +141,7 @@
 					ref="addAdditionalFields" />
 				<log id="_log5" message="Fixed Length Message Final : ${body}" />
 				<doCatch id="_doCatch1">
+					<exception>java.io.IOException</exception>
 					<exception>java.lang.StringIndexOutOfBoundsException</exception>
 					<exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
 					<exception>java.lang.NullPointerException</exception>
@@ -241,6 +242,7 @@
 				<log id="_log5_sta"
 					message="Fixed Length Message Final : ${body}" />
 				<doCatch id="_doCatch1_sta">
+					<exception>java.io.IOException</exception>
 					<exception>java.lang.StringIndexOutOfBoundsException</exception>
 					<exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
 					<exception>java.lang.NullPointerException</exception>
@@ -390,6 +392,7 @@
 					</otherwise>
 				</choice>
 				<doCatch id="_doCatch1_pay">
+					<exception>java.io.IOException</exception>
 					<exception>java.lang.StringIndexOutOfBoundsException</exception>
 					<exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
 					<exception>java.lang.NullPointerException</exception>
@@ -447,6 +450,7 @@
 					<simple />
 				</setBody>
 				<doCatch id="_doCatch1_cbk">
+					<exception>java.io.IOException</exception>
 					<exception>java.lang.StringIndexOutOfBoundsException</exception>
 					<exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
 					<exception>java.lang.NullPointerException</exception>
@@ -471,6 +475,7 @@
 				<to id="_toHliTcpRouter"
 					uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true" />
 				<doCatch id="_doCatch2">
+					<exception>java.io.IOException</exception>
 					<exception>java.lang.StringIndexOutOfBoundsException</exception>
 					<exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
 					<exception>java.lang.NullPointerException</exception>
