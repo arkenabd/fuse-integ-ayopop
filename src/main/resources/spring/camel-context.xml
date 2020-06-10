@@ -41,7 +41,7 @@
                 prettyPrint="false"
                 unmarshalTypeName="hana.integ.ayopop.resp.productlist.ProductlistResp" useDefaultObjectMapper="true"/>
         </dataFormats>
-        <restConfiguration bindingMode="off" component="jetty"
+        <restConfiguration bindingMode="off" component="restlet"
             contextPath="/hanabank" host="0.0.0.0" port="7081"/>
         <!-- <restConfiguration apiContextPath="/openapi.json" bindingMode="off" 
 			component="restlet" contextPath="/hanabank" host="0.0.0.0" port="7071"> <apiProperty 
