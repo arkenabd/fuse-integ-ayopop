@@ -71,7 +71,7 @@
         </rest>
         <route id="_inquiry">
             <!-- <from id="_to3" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
-            <from id="_to4" uri="direct:inquiry"/>
+            <from id="_to4" uri="direct:inquiry?timeout=60000"/>
             <process id="_Init_Strategy_inq" ref="killRoute"/>
             <doTry id="_doTry1">
                 <log id="_Input" message="Input Message : ${body}"/>
@@ -151,7 +151,7 @@
         </route>
         <route id="_status">
             <!-- <from id="_to3_pay" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
-            <from id="_to4_sta" uri="direct:status"/>
+            <from id="_to4_sta" uri="direct:status?timeout=60000"/>
             <process id="_Init_Strategy_sta" ref="killRoute"/>
             <doTry id="_doTry1_sta">
                 <log id="_Input_sta" message="Input Message : ${body}"/>
@@ -229,7 +229,7 @@
         </route>
         <route id="_payment">
             <!-- <from id="_to3_pay" uri="netty:tcp://localhost:7079?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
-            <from id="_to4_pay" uri="direct:payment"/>
+            <from id="_to4_pay" uri="direct:payment?timeout=60000"/>
             <process id="_Init_Strategy_pay" ref="killRoute"/>
             <doTry id="_doTry1_pay">
                 <log id="_Input_pay" message="Input Message : ${body}"/>
@@ -380,7 +380,7 @@
             </onException>
         </route>
         <route id="_callback">
-            <from id="_from4_cbk" uri="direct:callback"/>
+            <from id="_from4_cbk" uri="direct:callback?timeout=60000"/>
             <process id="_Init_Strategy_cbk" ref="killRoute"/>
             <doTry id="_doTry1_cbk">
                 <log id="_Input_cbk" message="Input Message : ${body}"/>
