@@ -11,7 +11,7 @@ public class PullMessageCallback implements Processor {
 		String url = (String) exchange.getProperty("fileRespPay");
 
 		ConsumerTemplate template = exchange.getContext().createConsumerTemplate();
-		Exchange fileExchange = template.receive(url, 20000);
+		Exchange fileExchange = template.receive(url, 30000);
 		exchange.getOut().setBody(fileExchange.getIn().getBody());
 		System.out.println("Get message from callback :" + fileExchange.getIn().getBody());
 		template.doneUoW(fileExchange);
