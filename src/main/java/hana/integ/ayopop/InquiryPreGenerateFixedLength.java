@@ -59,7 +59,11 @@ public class InquiryPreGenerateFixedLength {
 		if (respCodeSubmit.equals("05")) {
 			int length = messageEn.length();
 			if (length <= 46) {
-				messageEn = messageEn.substring(15);
+				if (length >= 15) {
+					messageEn = messageEn.substring(15);
+				} else {
+
+				}
 			} else {
 				messageEn = messageEn.substring(15, 45);
 			}
