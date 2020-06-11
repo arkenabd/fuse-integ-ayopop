@@ -350,34 +350,12 @@
                     <setBody id="co_setBody6_pay">
                         <simple>0043RAPI${body.substring(8,41)}05</simple>
                     </setBody>
+                    <setHeader headerName="responseBody" id="_setHeader1">
+                        <simple>${body}</simple>
+                    </setHeader>
                     <log id="_log7_pay" message="Fixed Length Message Final (ERROR) : ${body}"/>
                 </doCatch>
             </doTry>
-            <onException id="_onException2">
-                <exception>java.io.IOException</exception>
-                <exception>java.lang.StringIndexOutOfBoundsException</exception>
-                <exception>org.apache.camel.component.file.GenericFileOperationFailedException</exception>
-                <exception>java.lang.NullPointerException</exception>
-                <exception>java.lang.IllegalArgumentException</exception>
-                <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
-                <exception>org.apache.camel.ExpressionEvaluationException</exception>
-                <exception>org.apache.camel.CamelExchangeException</exception>
-                <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
-                <exception>org.apache.camel.InvalidPayloadException</exception>
-                <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-                <setBody id="_setBody5_pay2">
-                    <simple>${exchangeProperty[bodyBeforeCallGetSeqNum]}</simple>
-                </setBody>
-                <log id="co_log9_pay2" message="Error Message : ${exception.message}, Body : ${body}"/>
-                <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13x_pay2">
-                    <constant>500</constant>
-                </setHeader>
-                <convertBodyTo id="_convertBodyTo3_pay2" type="java.lang.String"/>
-                <setBody id="co_setBody6_pay2">
-                    <simple>0043RAPI${body.substring(8,41)}05</simple>
-                </setBody>
-                <log id="_log7_pay2" message="Fixed Length Message Final (ERROR) : ${body}"/>
-            </onException>
         </route>
         <route id="_callback">
             <from id="_from4_cbk" uri="direct:callback?timeout=60000"/>
