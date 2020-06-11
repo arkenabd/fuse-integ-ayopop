@@ -145,6 +145,9 @@
                     <setBody id="co_setBody6">
                         <simple>0043RAPI${body.substring(8,41)}05</simple>
                     </setBody>
+                    <setHeader headerName="responseBody" id="_setHeader2">
+                        <simple>${body}</simple>
+                    </setHeader>
                     <log id="_log7" message="Fixed Length Message Final (ERROR) : ${body}"/>
                 </doCatch>
             </doTry>
@@ -221,9 +224,14 @@
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13_sta">
                         <constant>500</constant>
                     </setHeader>
+                    <convertBodyTo id="_convertBodyTo5" type="java.lang.String"/>
                     <setBody id="co_setBody6_sta">
-                        <simple/>
+                        <simple>0043RAPI${body.substring(8,41)}05</simple>
                     </setBody>
+                    <setHeader headerName="responseBody" id="_setHeader3">
+                        <simple>${body}</simple>
+                    </setHeader>
+                    <log id="_log12" message="Fixed Length Message Final (ERROR) : ${body}"/>
                 </doCatch>
             </doTry>
         </route>
