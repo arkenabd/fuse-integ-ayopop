@@ -34,7 +34,8 @@ public class CallbackPreGenerateFixedLength {
 			String productName, String productCode, String amount, String totalAdmin, String validity, String messageEn,
 			String refNumInqidTid, Exchange exchange) {
 		// Get counter
-		System.out.println("refNumInqidTid :"+refNumInqidTid);
+		
+		System.out.println("refNumInqidTid :" + refNumInqidTid);
 		refNumInqidTid = StringUtils.rightPad(refNumInqidTid, 50, " ");
 		String inquiryId = refNumInqidTid.substring(20, 30);
 		String Tid = refNumInqidTid.substring(30, 44);
