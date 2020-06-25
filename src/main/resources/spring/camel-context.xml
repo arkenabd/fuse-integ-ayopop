@@ -42,30 +42,23 @@
                 unmarshalTypeName="hana.integ.ayopop.resp.productlist.ProductlistResp" useDefaultObjectMapper="true"/>
         </dataFormats>
         <restConfiguration bindingMode="off" component="restlet"
-            contextPath="/hanabank" host="0.0.0.0" port="7081"/>
+            contextPath="/ayp" host="0.0.0.0" port="7081"/>
         <!-- <restConfiguration apiContextPath="/openapi.json" bindingMode="off" 
 			component="restlet" contextPath="/hanabank" host="0.0.0.0" port="7071"> <apiProperty 
 			key="api.spesification.contentType.json" value="application/vnd.oai.openapi+json;version=2.0"/> 
 			<apiProperty key="api.spesification.contentType.yaml" value="application/vnd.oai.openapi;version=2.0"/> 
 			</restConfiguration> -->
         <rest id="rest-cbb021e1-7817-4026-a9e1-9044e0f0ffa6">
-            <post id="1bf92085-8dec-4722-9bd0-eebc9d52bd16" uri="integ/ayopop/inquiry">
+            <post id="1bf92085-8dec-4722-9bd0-eebc9d52bd16" uri="/inquiry">
                 <to uri="direct:inquiry"/>
             </post>
-            <post id="4c603263-bf05-4258-bf33-3f500ac9d3d0" uri="/integ/ayopop/productlist">
-                <to uri="direct:productlist"/>
-            </post>
-            <post id="c8303b86-5ead-44a5-964d-9192c97eae13"
-                skipBindingOnErrorCode="false" uri="/integ/ayopop/balance">
-                <to uri="direct:balance"/>
-            </post>
-            <post id="3c4cf6b0-f0ed-4612-8633-682d4b46034c" uri="/integ/ayopop/callback">
+            <post id="3c4cf6b0-f0ed-4612-8633-682d4b46034c" uri="/callback">
                 <to uri="direct:callback"/>
             </post>
-            <post id="bd0b840d-4141-49db-87a7-c5e3eaab11cd" uri="/integ/ayopop/status">
+            <post id="bd0b840d-4141-49db-87a7-c5e3eaab11cd" uri="/status">
                 <to uri="direct:status"/>
             </post>
-            <post id="2b494d9d-b5da-4c0d-a415-fc9ee6cfc0d1" uri="/integ/ayopop/payment">
+            <post id="2b494d9d-b5da-4c0d-a415-fc9ee6cfc0d1" uri="/payment">
                 <to uri="direct:payment"/>
             </post>
         </rest>
@@ -442,30 +435,6 @@
 			<bean id="_bean32" method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" 
 			ref="preGenerateFLStatus"/> <marshal id="_marshal32"> <flatpack definition="StatusFlconfigIn.xml" 
 			fixed="true"/> </marshal> </route> -->
-        <route id="_balance">
-            <from id="_from5" uri="direct:balance"/>
-            <log id="_Input4" message="Input Message : ${body}"/>
-            <unmarshal id="_FL4">
-                <flatpack definition="BalanceFlconfigOut.xml" fixed="true"/>
-            </unmarshal>
-            <log id="_log41" message="Check Parsing : ${body.get(0).get(PROCESS_CODE)}"/>
-            <bean id="_bean41"
-                method="assignValue(body.get(0).get(PARTNER_ID))" ref="balanceReq"/>
-            <marshal id="_marshal41">
-                <json library="Jackson"/>
-            </marshal>
-            <to id="_to41" uri="https4://dev.openapi.ayopop.id/api/v1/partner/balance"/>
-            <convertBodyTo id="_convertBodyTo41" type="java.lang.String"/>
-            <unmarshal id="_input_to_pojo4">
-                <custom ref="ayopop_balance_dataformat"/>
-            </unmarshal>
-            <log id="_Check Parse4" message="Check Parse Data inquiryId : ${body.inquiryId}"/>
-            <bean id="_bean42"
-                method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" ref="preGenerateFLBalance"/>
-            <marshal id="_marshal42">
-                <flatpack definition="BalanceFlconfigIn.xml" fixed="true"/>
-            </marshal>
-        </route>
         <!-- <route id="_productlist"> <from id="_from6" uri="direct:productlist"/> 
 			<log id="_Input5" message="Input Message : ${body}"/> <unmarshal id="_FL5"> 
 			<flatpack definition="ProductlistFlconfigOut.xml" fixed="true"/> </unmarshal> 
@@ -479,21 +448,6 @@
 			<bean id="_bean52" method="generate(${body.inquiryId},${body.inquiryId},${body.inquiryId})" 
 			ref="preGenerateFLProductlist"/> <marshal id="_marshal52"> <flatpack definition="ProductlistFlconfigIn.xml" 
 			fixed="true"/> </marshal> </route> -->
-        <route id="_productlist">
-            <from id="_from6" uri="direct:productlist"/>
-            <log id="_Input5" message="Input Message : ${body}"/>
-            <setProperty id="_setProperty1" propertyName="TRX">
-                <simple>productlist</simple>
-            </setProperty>
-            <!-- <to id="_to51" uri="https4://dev.openapi.ayopop.id/api/v1/partner/products"/> 
-				<convertBodyTo id="_convertBodyTo51" type="java.lang.String"/> <unmarshal 
-				id="_input_to_pojo5"> <custom ref="ayopop_productlist_dataformat"/> </unmarshal> 
-				<marshal id="_marshal3"> <json library="Jackson"/> </marshal> -->
-            <setBody id="_setBody2">
-                <simple/>
-            </setBody>
-            <to id="_to2" uri="https4://dev.openapi.ayopop.id/api/v1/partner/products?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
-        </route>
         <route id="_get_Seq_ayp">
             <from id="_from31_ayp" uri="direct:getseqnum"/>
             <log id="_Current_SeqNum_ayp" message="Sequence number from value ${properties:test} to value (${properties:test} + 1)"/>
