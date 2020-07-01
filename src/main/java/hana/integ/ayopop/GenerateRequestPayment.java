@@ -15,8 +15,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class GenerateRequestPayment {
 
-	public void process(String accountNumber, String productCode, String inquiryId, String amount, String refNumber,
-			String month, String billIds, Exchange exchange) throws Exception {
+	public void process(String partnerId, String apiSecret, String callbackAddr, String accountNumber,
+			String productCode, String inquiryId, String amount, String refNumber, String month, String billIds,
+			Exchange exchange) throws Exception {
 		// TODO Auto-generated method stub
 		System.out.println("inquiryId: " + inquiryId);
 		try {
@@ -27,8 +28,6 @@ public class GenerateRequestPayment {
 		} catch (Exception e) {
 			month = "-";
 		}
-		String partnerId = "mGKm25W0454v";
-		String apiSecret = "0eN7R4uR1pxJvwJV7rAkfpQ5TTKCkanfhwN";
 		String token = "";
 		// remove decimal
 		amount = amount.substring(0, amount.length() - 2);
@@ -39,8 +38,7 @@ public class GenerateRequestPayment {
 //		HashMap<String, Object> mapPayloadBuyerDetail = new HashMap<String, Object>();
 //		mapPayloadBuyerDetail.put("buyerEmail", "test@gmail.com");
 //		mapPayloadBuyerDetail.put("publicBuyerId", "1122457HG23");
-		String[] callbackArr = {
-				"http://integ-ayopop-apim.apps.ocp-dev.hanabank.co.id/hanabank/integ/ayopop/callback" };
+		String[] callbackArr = { callbackAddr };
 
 		JwtBuilder builder = Jwts.builder().setHeaderParam("alg", "HS256").setHeaderParam("typ", "JWT")
 				.claim("inquiryId", Long.parseLong(inquiryId.trim())).claim("accountNumber", accountNumber)

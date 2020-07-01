@@ -15,11 +15,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class GenerateRequestInquiry {
 
-	public void process(String accoutnNumber, String productCode, String zoneId, String month, Exchange exchange)
+	public void process(String partnerId,String apiSecret,String accoutnNumber, String productCode, String zoneId, String month, Exchange exchange)
 			throws Exception {
 		// TODO Auto-generated method stub
-		String partnerId = "mGKm25W0454v";
-		String apiSecret = "0eN7R4uR1pxJvwJV7rAkfpQ5TTKCkanfhwN";
 		String token = "";
 		// Check value zoneId and month
 		try {

@@ -34,7 +34,6 @@ public class PaymentPreGenerateFixedLength {
 			String customerName, String productName, String productCode, String amount, String totalAdmin,
 			String validity, String transId, String transSeqNum, String messageEn, Exchange exchange) {
 		// Get counter
-		String existingCounter = exchange.getProperty("counter").toString();
 		// Get length additional field
 		int addFLength = exchange.getProperty("additionalFields").toString().length();
 		// Map response code to 2 digit : (0 - 99 -> 00) ,(300 -> 00), (100 - 199 ->

@@ -15,11 +15,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class GenerateRequestStatus {
 
-	public void process(String refNumber, Exchange exchange) throws Exception {
+	public void process(String partnerId, String apiSecret, String refNumber, Exchange exchange) throws Exception {
 		// TODO Auto-generated method stub
 		java.util.Properties properties = new java.util.Properties();
-		String partnerId = "mGKm25W0454v";
-		String apiSecret = "0eN7R4uR1pxJvwJV7rAkfpQ5TTKCkanfhwN";
 		String token = "";
 
 		// Generate Token
@@ -40,7 +38,7 @@ public class GenerateRequestStatus {
 		try {
 			exchange.getIn().getHeaders().clear();
 		} catch (Exception e) {
-			
+
 		}
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/json");
 		exchange.getIn().setHeader("KEY", partnerId);

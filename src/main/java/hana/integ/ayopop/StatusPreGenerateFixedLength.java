@@ -33,7 +33,6 @@ public class StatusPreGenerateFixedLength {
 	public List<Map<String, String>> generate(String responseCode, String accountNumber, String customerName,
 			String productName, String productCode, String amount, String totalAdmin, String validity,
 			String transSeqNum, String transId, String refNumInqidTid, String messageEn, Exchange exchange) {
-		// Get counter
 		System.out.println("refNumInqidTid :" + refNumInqidTid);
 		refNumInqidTid = StringUtils.rightPad(refNumInqidTid, 50, " ");
 		String inquiryId = refNumInqidTid.substring(20, 30);
