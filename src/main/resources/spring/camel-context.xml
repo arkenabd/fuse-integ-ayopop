@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.restlet.Component" id="restletComponent"/>
+    <bean class="org.apache.camel.component.restlet.RestletComponent" id="restlet">
+        <constructor-arg index="0">
+            <ref bean="restletComponent"/>
+        </constructor-arg>
+        <property name="maxThreads" value="200"/>
+        <property name="minThreads" value="1"/>
+        <property name="threadMaxIdleTimeMs" value="60000"/>
+    </bean>
     <camelContext id="camel" streamCache="true" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
@@ -226,8 +235,15 @@
                 <setProperty id="_inquiryId" propertyName="inquiryId">
                     <simple>${body.get(0).get(INQUIRY_ID)}</simple>
                 </setProperty>
+                <setProperty id="_setProperty4" propertyName="refNumber">
+                    <simple>${body.get(0).get(REF_NUMBER)}</simple>
+                </setProperty>
                 <bean id="_bean1_pay"
                     method="process({{partner.id}},{{api.secret}},{{callback.address}},${body.get(0).get(ACCOUNT_NUMBER)},${body.get(0).get(PRODUCT_CODE)},${body.get(0).get(INQUIRY_ID)},${body.get(0).get(AMOUNT)},${body.get(0).get(REF_NUMBER)},${body.get(0).get(MONTH)},${body.get(0).get(BILL_IDS)})" ref="requestPayment"/>
+                <transform id="_transform_pay">
+                    <simple>Transaction : Payment\nDescription : Payment Request\nReference Number : ${exchangeProperty[refNumber]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${exchangeProperty[bodyOri]}\n\n\n</simple>
+                </transform>
+                <toD id="_to_ftp_payment" uri="ftp://192.168.88.231:21/ayopop/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password=redhat&amp;username=fuse"/>
                 <setBody id="_setBody3_pay">
                     <simple/>
                 </setBody>
@@ -272,6 +288,16 @@
                         <convertBodyTo id="_convertBodyTo2_pay" type="java.lang.String"/>
                         <bean id="_bean4_pay"
                             method="concatenate(${body})" ref="addAdditionalFields"/>
+                        <setProperty id="_setProperty5" propertyName="bodyOriFL">
+                            <simple>${body}</simple>
+                        </setProperty>
+                        <transform id="_transform2">
+                            <simple>Transaction : Payment\nDescription : Payment Response\nReference Number : ${exchangeProperty[refNumber]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${body}\n\n\n</simple>
+                        </transform>
+                        <toD id="_to_ftp_payment_resp" uri="ftp://192.168.88.231:21/ayopop/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password=redhat&amp;username=fuse"/>
+                        <setBody id="_setBody6">
+                            <simple>${exchangeProperty[bodyOriFL]}</simple>
+                        </setBody>
                         <log id="_log5_pay" message="Fixed Length Message Final : ${body}"/>
                         <to id="_to8" uri="direct:hlitcprouter"/>
                     </otherwise>
@@ -318,6 +344,12 @@
                 <unmarshal id="_input_to_pojo_cbk2">
                     <custom ref="ayopop_payment_dataformat"/>
                 </unmarshal>
+                <setProperty id="_setProperty8" propertyName="refNumber">
+                    <simple>${body.data.refNumber}</simple>
+                </setProperty>
+                <setProperty id="_setfileName" propertyName="currDate">
+                    <simple>${date:now:ddMMyyy}</simple>
+                </setProperty>
                 <bean id="_bean2_pay_inproc"
                     method="generate(${body.responseCode},${body.data.accountNumber},'',${body.data.productName},${body.data.productCode},${body.data.amount},${body.data.totalAdmin},'',${body.message.eN},${body.data.refNumber})" ref="preGenerateFLCallback"/>
                 <marshal id="_marshal2_pay_inproc">
@@ -328,7 +360,17 @@
                 <convertBodyTo id="_convertBodyTo2_pay_inproc" type="java.lang.String"/>
                 <bean id="_bean4_pay_inproc"
                     method="concatenate(${body})" ref="addAdditionalFields"/>
+                <setProperty id="_setProperty2" propertyName="bodyJsonOri">
+                    <simple>${body}</simple>
+                </setProperty>
                 <log id="_log5_pay_inproc" message="Fixed Length Message Final : ${body}"/>
+                <transform id="_transform1">
+                    <simple>Transaction : Payment\nDescription : Payment Response\nReference Number : ${exchangeProperty[refNumber]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${body}\n\n\n</simple>
+                </transform>
+                <toD id="_to_ftp_callback" uri="ftp://192.168.88.231:21/ayopop/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password=redhat&amp;username=fuse"/>
+                <setBody id="_setBody4">
+                    <simple>${exchangeProperty[bodyJsonOri]}</simple>
+                </setBody>
                 <to id="_to6" uri="direct:hlitcprouter"/>
                 <setBody id="_setBody8">
                     <simple/>
